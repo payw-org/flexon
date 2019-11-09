@@ -8,15 +8,15 @@ Digit [0-9]
 
 %option noyywrap
 %%
-{Letter}({Letter}|{Digit})* { return ID; }
-{Digit}+ { return Integer; }
-{Digit}+\.{Digit}* { return Float; }
-
 "+" | "-" | "*" | "/" | "<" | "<=" | ">=" | ">" | "==" | "!=" | "!" { return Operator; }
+
+";" | "." | "," | "=" | "(" | ")" | "[" | "]" | ":" { return Delimiter; }
 
 "mainprog" | "function" | "procedure" | "begin" | "end" | "if" | "then" | "else" | "nop" | "while" | "return" | "print" | "in" { return Keyword; }
 
-";" | "." | "," | "=" | "(" | ")" | "[" | "]" | ":" { return Delimiter; }
+{Letter}({Letter}|{Digit})* { return ID; }
+{Digit}+ { return Integer; }
+{Digit}+\.{Digit}* { return Float; }
 
 [ \t] ;	// ignore all whitespace
 \n { return Newline; } 
