@@ -12,25 +12,25 @@ void yyerror(const char* s);
 %}
 
 /* declare tokens */
+%token Mainprog Function Procedure Begin End If Then Else Nop While Return Print In For Elif
+%token IntType FloatType
 %token Integer Float
-%token Keyword
-%token Operator
-%token Delimiter
+%token Comparator
 %token Newline
 %token ID
 
 %left '>' ">=" '<' "<=" "==" "!=" "in"
 %left '+' '-'
 %left '*' '/'
-%right '='
+%right '=' '!'
 
 %nonassoc NO_ELSE
-%nonassoc "elif"
-%nonassoc "else"
+%nonassoc Elif
+%nonassoc Else
 
 %%
 
-program: "mainprog" ID ';' declarations subprogram_declarations compound_statement
+program: Mainprog ID ';' declarations subprogram_declarations compound_statement
 ;
 
 declarations:	// epsilon
@@ -45,8 +45,8 @@ type: standard_type
 	| standard_type '[' Integer ']'
 ;
 
-standard_type: "int"
-		| "float"
+standard_type: IntType
+		| FloatType
 ;
 
 subprogram_declarations: // epsilon
@@ -56,8 +56,8 @@ subprogram_declarations: // epsilon
 subprogram_declaration: subprogram_head declarations compound_statement
 ;
 
-subprogram_head: "function" ID arguments ':' standard_type ';'
-		| "procedure" ID arguments ';'
+subprogram_head: Function ID arguments ':' standard_type ';'
+		| Procedure ID arguments ';'
 ;
 
 arguments: // epsilon
@@ -68,7 +68,7 @@ parameter_list: identifier_list ':' type
 		| identifier_list ':' type ';' parameter_list
 ;
 
-compound_statement: "begin" statement_list "end"
+compound_statement: Begin statement_list End
 ;
 
 statement_list: statement
@@ -82,31 +82,31 @@ statement: variable '=' expression
 	| if_statement
 	| while_statement
 	| for_statement
-	| "return" expression
-	| "nop"
+	| Return expression
+	| Nop
 ;
 
-if_statement: "if" expression ':' statement elif_statement
+if_statement: If expression ':' statement elif_statement
 ;
 
 elif_statement: %prec NO_ELSE
 		| else_statement
-		| "elif" expression ':' statement elif_statement
+		| Elif expression ':' statement elif_statement
 ;
 
-else_statement: "else" ':' statement
+else_statement: Else ':' statement
 ;
 
-while_statement: "while" expression ':' statement %prec NO_ELSE
-		| "while" expression ':' statement else_statement
+while_statement: While expression ':' statement %prec NO_ELSE
+		| While expression ':' statement else_statement
 ;
 
-for_statement: "for" expression "in" expression ':' statement %prec NO_ELSE
-		| "for" expression "in" expression ':' statement else_statement
+for_statement: For expression In expression ':' statement %prec NO_ELSE
+		| For expression In expression ':' statement else_statement
 ;
 
-print_statement: "print"
-		| "print" '(' expression ')'
+print_statement: Print
+		| Print '(' expression ')'
 ;
 
 variable: ID
@@ -147,12 +147,7 @@ sign: '+'
 	| '-'
 ;
 
-relop: '>'
-	| ">="
-	| '<'
-	| "<="
-	| "=="
-	| "!="
+relop: Comparator
 	| "in"
 ;
 
