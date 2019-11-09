@@ -6,6 +6,8 @@ extern int yylex();
 extern int yyparse();
 extern FILE* yyin;
 
+#define YYDEBUG 1
+
 void yyerror(const char* s);
 %}
 
@@ -165,8 +167,36 @@ multop: '*'
 %%
 
 int main(int argc, char **argv) {
-	yyin = stdin;
+	// Invalid argument
+	if (argc != 2) {
+		printf("Invalid command line arguments.");
+		return 1;
+	}
 
+	FILE *file;
+
+	// Invalid file name
+	if ((file = fopen(argv[1], "r")) == NULL) {
+		printf("File is not exist.");
+		return 1;
+	}
+
+//	// check file size
+//	fseek(file, 0, SEEK_END);
+//	long file_size = ftell(file);
+//	fseek(file, 0, SEEK_SET);
+//
+//	// read the file at once
+//	char *code = (char*)malloc(file_size + 1);
+//	fread(code, 1, file_size, file);
+//	fclose(file);
+//
+//	// set end of string
+//	code[file_size] = 0;
+
+	yydebug = 1;
+
+	yyin = file;
 	do {
 		yyparse();
 	} while(!feof(yyin));
@@ -178,4 +208,3 @@ void yyerror(const char* s) {
 	fprintf(stderr, "Parse error: %s\n", s);
 	exit(1);
 }
-
