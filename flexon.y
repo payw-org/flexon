@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define YYDEBUG 1
+
 extern int yylex();
 extern int yyparse();
-extern FILE* yyin;
-
-#define YYDEBUG 1
+extern FILE *yyin;
 
 void yyerror(const char* s);
 %}
@@ -19,7 +19,7 @@ void yyerror(const char* s);
 %token Newline
 %token ID
 
-%left '>' ">=" '<' "<=" "==" "!=" "in"
+%left Comparator In
 %left '+' '-'
 %left '*' '/'
 %right '=' '!'
@@ -148,7 +148,7 @@ sign: '+'
 ;
 
 relop: Comparator
-	| "in"
+	| In
 ;
 
 addop: '+'
