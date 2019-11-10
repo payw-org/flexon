@@ -1,11 +1,12 @@
 %{
 #include <stdio.h>
+#include <string.h>
 #include "flexon.tab.h"
 %}
 Letter [a-zA-Z]
 Digit [0-9]
 
-%option noyywrap
+%option noyywrap yylineno
 %%
 
  /* single character operators */
@@ -57,7 +58,12 @@ Digit [0-9]
 {Digit}+ { return Integer; }
 {Digit}+\.{Digit}* { return Float; }
 
-[ \t] ;	// ignore all whitespace
-\n { return Newline; }
-%%
+"\n" { return Newline; }
 
+ /* things to ignore */
+"//".* ;    // comments
+[ \t\r] ;	// all whitespace
+\\\n ;  // line continuation
+
+.   { fprintf(stderr, "Unknown character: %c\n", yytext[0]); exit(1); }
+%%
