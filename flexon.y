@@ -31,6 +31,8 @@ void yyerror(const char *s);
 %nonassoc Elif
 %nonassoc Else
 
+%start program
+
 %%
 
 program: Mainprog ID ';' declarations subprogram_declarations compound_statement
