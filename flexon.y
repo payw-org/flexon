@@ -13,6 +13,11 @@ void yywarning(const char *s);
 void yyerror(const char *s);
 %}
 
+%union {
+	int ival;
+	float fval;
+}
+
 /* declare tokens */
 %token Mainprog Function Procedure Begin End If Then Else Nop While Return Print In For Elif
 %token IntType FloatType

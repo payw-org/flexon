@@ -55,8 +55,8 @@ Digit [0-9]
 "float"         { return FloatType; }
 
 {Letter}({Letter}|{Digit})* { return ID; }
-{Digit}+ { return Integer; }
-{Digit}+\.{Digit}* { return Float; }
+{Digit}+ { yylval.ival = atoi(yytext); return Integer; }
+{Digit}+\.{Digit}* { yylval.fval = atof(yytext); return Float; }
 
  /* things to ignore */
 "//".* ;    // comments
