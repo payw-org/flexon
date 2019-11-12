@@ -4,6 +4,7 @@
 
 #define YYDEBUG 1
 
+extern int yylineno;
 extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
@@ -177,21 +178,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-//	// check file size
-//	fseek(file, 0, SEEK_END);
-//	long file_size = ftell(file);
-//	fseek(file, 0, SEEK_SET);
-//
-//	// read the file at once
-//	char *code = (char*)malloc(file_size + 1);
-//	fread(code, 1, file_size, file);
-//	fclose(file);
-//
-//	// set end of string
-//	code[file_size] = 0;
-
 	yydebug = 1;
-
 	yyin = file;
 	do {
 		yyparse();
