@@ -58,12 +58,10 @@ Digit [0-9]
 {Digit}+ { return Integer; }
 {Digit}+\.{Digit}* { return Float; }
 
-"\n" { return Newline; }
-
  /* things to ignore */
 "//".* ;    // comments
-[ \t\r] ;	// all whitespace
+[ \t\r\n] ;	// all whitespace
 \\\n ;  // line continuation
 
-.   { fprintf(stderr, "Unknown character: %c\n", yytext[0]); exit(1); }
+.   { fprintf(stderr, "Line %d: Unknown character %c\n", yylineno, yytext[0]); exit(1); }
 %%
