@@ -26,7 +26,8 @@ void yyerror(const char *s);
 %left '*' '/'
 %right '=' '!'
 
-%nonassoc NO_ELSE
+%nonassoc FAKE_NO_ELSE
+%nonassoc FAKE_NO_RELOP
 %nonassoc Elif
 %nonassoc Else
 
@@ -91,7 +92,7 @@ statement: variable '=' expression
 if_statement: If expression ':' statement elif_statement
 ;
 
-elif_statement: %prec NO_ELSE
+elif_statement: %prec FAKE_NO_ELSE
 		| else_statement
 		| Elif expression ':' statement elif_statement
 ;
@@ -99,11 +100,11 @@ elif_statement: %prec NO_ELSE
 else_statement: Else ':' statement
 ;
 
-while_statement: While expression ':' statement %prec NO_ELSE
+while_statement: While expression ':' statement %prec FAKE_NO_ELSE
 		| While expression ':' statement else_statement
 ;
 
-for_statement: For expression In expression ':' statement %prec NO_ELSE
+for_statement: For expression In expression ':' statement %prec FAKE_NO_ELSE
 		| For expression In expression ':' statement else_statement
 ;
 
@@ -126,7 +127,8 @@ expression_list: expression
 		| expression ',' expression_list
 ;
 
-expression: simple_expression relop simple_expression
+expression: simple_expression %prec FAKE_NO_RELOP
+	| simple_expression relop simple_expression
 ;
 
 simple_expression: term
