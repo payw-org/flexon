@@ -8,7 +8,8 @@ extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
 
-void yyerror(const char* s);
+void yywarning(const char *s);
+void yyerror(const char *s);
 %}
 
 /* declare tokens */
@@ -199,7 +200,11 @@ int main(int argc, char **argv) {
 	return 0;
 }
 
-void yyerror(const char* s) {
-	fprintf(stderr, "Parse error: %s\n", s);
+void yywarning(const char *s) {
+	fprintf(stdout, "Warning: %s\n", s);
+}
+
+void yyerror(const char *s) {
+	fprintf(stderr, "Error: %s\n", s);
 	exit(1);
 }
