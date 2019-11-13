@@ -21,8 +21,10 @@ void yyerror(const char *s);
 
 /* declare tokens */
 %token Mainprog Function Procedure Begin End If Then Else Nop While Return Print In For Elif
-%token IntType FloatType
-%token Integer Float
+%token IntType
+%token FloatType
+%token<ival> Integer
+%token<fval> Float
 %token Comparator
 %token Newline
 %token<sval> ID
