@@ -1,16 +1,6 @@
 %{
-#include <stdio.h>
-#include <stdlib.h>
+#include "flexon.h"
 
-#define YYDEBUG 1
-
-extern int yylineno;
-extern int yylex();
-extern int yyparse();
-extern FILE *yyin;
-
-void yywarning(const char *s);
-void yyerror(const char *s);
 %}
 
 %union {
