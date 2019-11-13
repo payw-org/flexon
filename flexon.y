@@ -16,6 +16,7 @@ void yyerror(const char *s);
 %union {
 	int ival;
 	float fval;
+	char *sval;
 }
 
 /* declare tokens */
@@ -24,7 +25,7 @@ void yyerror(const char *s);
 %token Integer Float
 %token Comparator
 %token Newline
-%token ID
+%token<sval> ID
 
 %left Comparator In
 %left '+' '-'
