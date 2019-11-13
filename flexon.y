@@ -1,6 +1,5 @@
 %{
 #include "flexon.h"
-
 %}
 
 %union {
