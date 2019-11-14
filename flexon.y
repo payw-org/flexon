@@ -7,11 +7,11 @@ int end_of_global_decl;
 %}
 
 %union {
-	int ival;
-	float fval;
-	char *sval;
-	UniversalType *utval;
-	IDList *ilval;
+  int ival;
+  float fval;
+  char *sval;
+  UniversalType *utval;
+  IDList *ilval;
 }
 
 /* declare tokens */
@@ -46,152 +46,180 @@ int end_of_global_decl;
 program: Mainprog ID ';' declarations subprogram_declarations compound_statement
 ;
 
-declarations:	{
-			if (end_of_global_decl == 0) {
-				global_ids = NULL;
-			} else {
-				freeDeclaredIDList(local_ids);
-				local_ids = NULL;
-			}
-		}	// epsilon
-		| type identifier_list ';' declarations	{
-			int i;
-			if (end_of_global_decl == 0) {	// add to global ids
-				for (i = 0; i < $2->size; i++) {
-					global_ids = addDeclaredIDToList(global_ids, newDeclaredID($2->ids[i], $1));
-				}
-			} else {	// add to local ids
-				for (i = 0; i < $2->size; i++) {
-                                	local_ids = addDeclaredIDToList(local_ids, newDeclaredID($2->ids[i], $1));
-                                }
-			}
-		}
+declarations: {
+  if (end_of_global_decl == 0) {
+    global_ids = NULL;
+  } else {
+    freeDeclaredIDList(local_ids);
+    local_ids = NULL;
+  }
+} // epsilon
+| type identifier_list ';' declarations	{
+  int i;
+  if (end_of_global_decl == 0) {	// add to global ids
+    for (i = 0; i < $2->size; i++) {
+      global_ids = addDeclaredIDToList(global_ids, newDeclaredID($2->ids[i], $1));
+    }
+  } else {	// add to local ids
+    for (i = 0; i < $2->size; i++) {
+      local_ids = addDeclaredIDToList(local_ids, newDeclaredID($2->ids[i], $1));
+    }
+  }
+}
 ;
 
-identifier_list: ID				{
-			$$ = NULL;
-			addIDToList($$, $1);
-		}
-		| ID ',' identifier_list	{ $$ = addIDToList($3, $1); }
+identifier_list: ID {
+  $$ = NULL;
+  addIDToList($$, $1);
+}
+| ID ',' identifier_list  {
+  $$ = addIDToList($3, $1);
+}
 ;
 
-type: standard_type			{ $$ = newType($1, 0); }
-	| standard_type '[' Integer ']'	{ $$ = newType($1, $3); }
+type: standard_type  {
+  $$ = newType($1, 0);
+}
+| standard_type '[' Integer ']'	{
+  $$ = newType($1, $3);
+}
 ;
 
-standard_type: IntType		{ $$ = $1; }
-		| FloatType	{ $$ = $1; }
+standard_type: IntType {
+  $$ = $1;
+}
+| FloatType {
+  $$ = $1;
+}
 ;
 
-subprogram_declarations: { end_of_global_decl = 1; } // epsilon
-			| subprogram_declaration subprogram_declarations
+subprogram_declarations: {
+  end_of_global_decl = 1;
+} // epsilon
+| subprogram_declaration subprogram_declarations
 ;
 
 subprogram_declaration: subprogram_head declarations compound_statement
 ;
 
 subprogram_head: Function ID arguments ':' standard_type ';'
-		| Procedure ID arguments ';'
+| Procedure ID arguments ';'
 ;
 
 arguments: // epsilon
-	| '(' parameter_list ')'
+| '(' parameter_list ')'
 ;
 
 parameter_list: identifier_list ':' type
-		| identifier_list ':' type ';' parameter_list
+| identifier_list ':' type ';' parameter_list
 ;
 
 compound_statement: Begin statement_list End
 ;
 
 statement_list: statement
-		| statement ';' statement_list
+| statement ';' statement_list
 ;
 
 statement: variable '=' expression
-	| print_statement
-	| procedure_statement
-	| compound_statement
-	| if_statement
-	| while_statement
-	| for_statement
-	| Return expression
-	| Nop
+| print_statement
+| procedure_statement
+| compound_statement
+| if_statement
+| while_statement
+| for_statement
+| Return expression
+| Nop
 ;
 
 if_statement: If expression ':' statement elif_statement
 ;
 
 elif_statement: %prec FAKE_NO_ELSE
-		| else_statement
-		| Elif expression ':' statement elif_statement
+| else_statement
+| Elif expression ':' statement elif_statement
 ;
 
 else_statement: Else ':' statement
 ;
 
 while_statement: While expression ':' statement %prec FAKE_NO_ELSE
-		| While expression ':' statement else_statement
+| While expression ':' statement else_statement
 ;
 
 for_statement: For expression In expression ':' statement %prec FAKE_NO_ELSE
-		| For expression In expression ':' statement else_statement
+| For expression In expression ':' statement else_statement
 ;
 
 print_statement: Print
-		| Print '(' expression ')'
+| Print '(' expression ')'
 ;
 
 variable: ID
-	| ID '[' expression ']'
+| ID '[' expression ']'
 ;
 
 procedure_statement: ID '(' actual_parameter_expression ')'
 ;
 
 actual_parameter_expression: // epsilon
-			| expression_list
+| expression_list
 ;
 
 expression_list: expression
-		| expression ',' expression_list
+| expression ',' expression_list
 ;
 
 expression: simple_expression %prec FAKE_NO_RELOP
-	| simple_expression relop simple_expression
+| simple_expression relop simple_expression
 ;
 
 simple_expression: term
-		| term addop simple_expression
+| term addop simple_expression
 ;
 
 term: factor
-	| factor multop term
+| factor multop term
 ;
 
 factor: Integer
-	| Float
-	| variable
-	| procedure_statement
-	| '!' factor
-	| sign factor
+| Float
+| variable
+| procedure_statement
+| '!' factor
+| sign factor
 ;
 
-sign: '+'	{ $$ = $1; }
-	| '-' 	{ $$ = $1; }
+sign: '+' {
+  $$ = $1;
+}
+| '-' {
+  $$ = $1;
+}
 ;
 
-relop: Comparator	{ $$ = $1; }
-	| In		{ $$ = $1; }
+relop: Comparator {
+  $$ = $1;
+}
+| In {
+  $$ = $1;
+}
 ;
 
-addop: '+'	{ $$ = $1; }
-	| '-'	{ $$ = $1; }
+addop: '+' {
+  $$ = $1;
+}
+| '-' {
+  $$ = $1;
+}
 ;
 
-multop: '*'	{ $$ = $1; }
-	| '/'	{ $$ = $1; }
+multop: '*' {
+  $$ = $1;
+}
+| '/' {
+  $$ = $1;
+}
 ;
 
 %%
