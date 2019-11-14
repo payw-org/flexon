@@ -1,1 +1,5 @@
-mainprog asdf; begin nop end
+mainprog asdf;
+int[3] hello, one, you, two, good, me;
+begin
+nop
+end
