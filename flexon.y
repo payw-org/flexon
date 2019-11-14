@@ -6,16 +6,16 @@
 	int ival;
 	float fval;
 	char *sval;
+	UniversalType utval;
 }
 
 /* declare tokens */
-%token Mainprog Function Procedure Begin End If Then Else Nop While Return Print In For Elif
-%token IntType
-%token FloatType
+%token<sval> Mainprog Function Procedure Begin End If Then Else Nop While Return Print In For Elif
+%token<sval> IntType
+%token<sval> FloatType
 %token<ival> Integer
 %token<fval> Float
-%token Comparator
-%token Newline
+%token<sval> Comparator
 %token<sval> ID
 
 %left Comparator In
@@ -27,6 +27,10 @@
 %nonassoc FAKE_NO_RELOP
 %nonassoc Elif
 %nonassoc Else
+
+%type<sval> '+' '-' '*' '/'
+%type<sval> sign relop addop multop
+%type<sval> standard_type
 
 %start program
 
@@ -47,8 +51,8 @@ type: standard_type
 	| standard_type '[' Integer ']'
 ;
 
-standard_type: IntType
-		| FloatType
+standard_type: IntType		{ $$ = $1; }
+		| FloatType	{ $$ = $1; }
 ;
 
 subprogram_declarations: // epsilon
@@ -146,20 +150,20 @@ factor: Integer
 	| sign factor
 ;
 
-sign: '+'
-	| '-'
+sign: '+'	{ $$ = $1; }
+	| '-' 	{ $$ = $1; }
 ;
 
-relop: Comparator
-	| In
+relop: Comparator	{ $$ = $1; }
+	| In		{ $$ = $1; }
 ;
 
-addop: '+'
-	| '-'
+addop: '+'	{ $$ = $1; }
+	| '-'	{ $$ = $1; }
 ;
 
-multop: '*'
-	| '/'
+multop: '*'	{ $$ = $1; }
+	| '/'	{ $$ = $1; }
 ;
 
 %%
