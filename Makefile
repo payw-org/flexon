@@ -14,5 +14,5 @@ flexon.tab.c flexon.tab.h: flexon.y
 	bison -vd flexon.y
 
 clean:
-	rm -rf flexon flexon.tab.* flexon.lex.* flexon.output
+	rm -rf flexon flexon.tab.* flexon.lex.* flexon.output *.o
 
