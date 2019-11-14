@@ -169,7 +169,7 @@ multop: '*'	{ $$ = $1; }
 %%
 
 int main(int argc, char **argv) {
-	// Invalid argument
+	// invalid argument
 	if (argc != 2) {
 		printf("Invalid command line arguments.");
 		return 1;
@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
 
 	FILE *file;
 
-	// Invalid file name
+	// invalid file name
 	if ((file = fopen(argv[1], "r")) == NULL) {
 		printf("File is not exist.");
 		return 1;
