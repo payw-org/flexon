@@ -30,3 +30,23 @@ IDList* addIDToList(IDList *list, char *id) {
   return list;
 }
 
+DeclaredID* newDeclaredID(char *name, UniversalType *type) {
+  DeclaredID *new = (DeclaredID*)malloc(sizeof(DeclaredID));
+  new->name = name;
+  new->type = type;
+
+  return new;
+}
+
+DeclaredIDList* addDeclaredIDToList(DeclaredIDList *list, DeclaredID *decl_id) {
+  if (list == NULL) {
+    list = (DeclaredIDList*)malloc(sizeof(DeclaredIDList));
+    list->size = 0;
+  }
+
+  list->decl_ids[list->size] = decl_id;
+  list->size++;
+
+  return list;
+}
+

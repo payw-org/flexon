@@ -1,5 +1,9 @@
 %{
 #include "flexon.h"
+
+DeclaredIDList *global_ids;
+DeclaredIDList *local_ids;
+int end_of_global_decl;
 %}
 
 %union {
@@ -42,8 +46,25 @@
 program: Mainprog ID ';' declarations subprogram_declarations compound_statement
 ;
 
-declarations:	// epsilon
-		| type identifier_list ';' declarations
+declarations:	{
+			if (end_of_global_decl == 0) {
+				global_ids = NULL;
+			} else {
+				local_ids = NULL;
+			}
+		}	// epsilon
+		| type identifier_list ';' declarations	{
+			int i;
+			if (end_of_global_decl == 0) {	// add to global ids
+				for (i = 0; i < $2->size; i++) {
+					global_ids = addDeclaredIDToList(global_ids, newDeclaredID($2->ids[i], $1));
+				}
+			} else {	// add to local ids
+				for (i = 0; i < $2->size; i++) {
+                                	local_ids = addDeclaredIDToList(local_ids, newDeclaredID($2->ids[i], $1));
+                                }
+			}
+		}
 ;
 
 identifier_list: ID				{
@@ -61,7 +82,7 @@ standard_type: IntType		{ $$ = $1; }
 		| FloatType	{ $$ = $1; }
 ;
 
-subprogram_declarations: // epsilon
+subprogram_declarations: { end_of_global_decl = 1; } // epsilon
 			| subprogram_declaration subprogram_declarations
 ;
 
@@ -189,6 +210,12 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	// initialize global variables
+	global_ids = NULL;
+	local_ids = NULL;
+	end_of_global_decl = 0;
+
+	// start parsing
 	yydebug = 1;
 	yyin = file;
 	do {
