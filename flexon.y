@@ -1,9 +1,9 @@
 %{
 #include "flexon.h"
 
-DeclaredIDList *global_ids;
-DeclaredIDList *local_ids;
-int end_of_global_decl;
+DeclaredIDList *global_ids;  // global id list
+DeclaredIDList *local_ids;  // local id list
+int end_of_global_decl;  // flag for detecting the end of global declaration
 %}
 
 %union {
@@ -23,22 +23,24 @@ int end_of_global_decl;
 %token<sval> Comparator
 %token<sval> ID
 
+/* Define precedences */
 %left Comparator In
 %left '+' '-'
 %left '*' '/'
 %right '=' '!'
-
 %nonassoc FAKE_NO_ELSE
 %nonassoc FAKE_NO_RELOP
 %nonassoc Elif
 %nonassoc Else
 
+/* Define types */
 %type<sval> '+' '-' '*' '/'
 %type<sval> sign relop addop multop
 %type<sval> standard_type
 %type<utval> type
 %type<ilval> identifier_list
 
+/* Indicate start state */
 %start program
 
 %%

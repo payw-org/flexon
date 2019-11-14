@@ -5,28 +5,47 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define YYDEBUG 1
+#define YYDEBUG 1 // debug mode
 
 extern int yylineno;
 extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
 
+/**
+ * Struct for all types
+ *
+ * Ex)
+ *  If `int`, type = "int" and size = 0
+ *  If `float[5]`, type = "float" and size = 5
+ */
 typedef struct universal_type {
   char *type;
   int size;
 } UniversalType;
 
+/**
+ * Struct for the non-terminal `identifier_list`
+ */
 typedef struct id_list {
   int size;
   char *ids[64];
 } IDList;
 
+/**
+ * Struct for the declared id
+ *
+ * Ex)
+ *  If `int[5] num` then name = "num", type->type = "int" and type->size = 5
+ */
 typedef struct declared_id {
   char *name;
   UniversalType *type;
 } DeclaredID;
 
+/**
+ * Struct for the declared id list
+ */
 typedef struct declared_id_list {
   int size;
   DeclaredID *decl_ids[128];
