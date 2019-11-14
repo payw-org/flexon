@@ -6,7 +6,7 @@
 	int ival;
 	float fval;
 	char *sval;
-	UniversalType utval;
+	UniversalType *utval;
 }
 
 /* declare tokens */
@@ -31,6 +31,7 @@
 %type<sval> '+' '-' '*' '/'
 %type<sval> sign relop addop multop
 %type<sval> standard_type
+%type<utval> type
 
 %start program
 
@@ -47,8 +48,8 @@ identifier_list: ID
 		| ID ',' identifier_list
 ;
 
-type: standard_type
-	| standard_type '[' Integer ']'
+type: standard_type			{ $$ = newType($1, 0); }
+	| standard_type '[' Integer ']'	{ $$ = newType($1, $3); }
 ;
 
 standard_type: IntType		{ $$ = $1; }

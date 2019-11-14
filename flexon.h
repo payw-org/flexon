@@ -20,4 +20,5 @@ typedef struct universal_type {
 void yywarning(const char *s);
 void yyerror(const char *s);
 
+UniversalType* newType(char *type, int size);
 #endif //FLEXON_FLEXON_H
