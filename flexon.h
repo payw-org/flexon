@@ -12,6 +12,11 @@ extern int yylex();
 extern int yyparse();
 extern FILE *yyin;
 
+typedef struct universal_type {
+  char *type;
+  int size;
+} UniversalType;
+
 void yywarning(const char *s);
 void yyerror(const char *s);
 
