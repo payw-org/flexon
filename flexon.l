@@ -23,7 +23,7 @@ Digit [0-9]
 ")" |
 "[" |
 "]" |
-":" { return yytext[0]; }
+":" { yylval.sval = strdup(yytext); return yytext[0]; }
 
  /* comparison operators */
 "<" |
@@ -31,28 +31,28 @@ Digit [0-9]
 ">=" |
 ">" |
 "==" |
-"!=" { return Comparator; }
+"!=" { yylval.sval = strdup(yytext); return Comparator; }
 
  /* keywords */
-"mainprog"      { return Mainprog; }
-"function"      { return Function; }
-"procedure"     { return Procedure; }
-"begin"         { return Begin; }
-"end"           { return End; }
-"if"            { return If; }
-"then"          { return Then; }
-"else"          { return Else; }
-"nop"           { return Nop; }
-"while"         { return While; }
-"return"        { return Return; }
-"print"         { return Print; }
-"in"            { return In; }
-"for"           { return For; }
-"elif"          { return Elif; }
+"mainprog"      { yylval.sval = strdup(yytext); return Mainprog; }
+"function"      { yylval.sval = strdup(yytext); return Function; }
+"procedure"     { yylval.sval = strdup(yytext); return Procedure; }
+"begin"         { yylval.sval = strdup(yytext); return Begin; }
+"end"           { yylval.sval = strdup(yytext); return End; }
+"if"            { yylval.sval = strdup(yytext); return If; }
+"then"          { yylval.sval = strdup(yytext); return Then; }
+"else"          { yylval.sval = strdup(yytext); return Else; }
+"nop"           { yylval.sval = strdup(yytext); return Nop; }
+"while"         { yylval.sval = strdup(yytext); return While; }
+"return"        { yylval.sval = strdup(yytext); return Return; }
+"print"         { yylval.sval = strdup(yytext); return Print; }
+"in"            { yylval.sval = strdup(yytext); return In; }
+"for"           { yylval.sval = strdup(yytext); return For; }
+"elif"          { yylval.sval = strdup(yytext); return Elif; }
 
  /* type */
-"int"           { return IntType; }
-"float"         { return FloatType; }
+"int"           { yylval.sval = strdup(yytext); return IntType; }
+"float"         { yylval.sval = strdup(yytext); return FloatType; }
 
 {Letter}({Letter}|{Digit})* { yylval.sval = strdup(yytext); return ID; }
 {Digit}+ { yylval.ival = atoi(yytext); return Integer; }
