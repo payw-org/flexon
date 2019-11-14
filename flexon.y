@@ -74,7 +74,7 @@ declarations: {
 identifier_list: ID {
   // initialize
   $$ = NULL;
-  addIDToList($$, $1);
+  $$ = addIDToList($$, $1);
 }
 | ID ',' identifier_list  {
   $$ = addIDToList($3, $1);
