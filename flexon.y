@@ -49,20 +49,21 @@ program: Mainprog ID ';' declarations subprogram_declarations compound_statement
 ;
 
 declarations: {
-  if (end_of_global_decl == 0) {
+  // initialize
+  if (end_of_global_decl == 0) {  // global declaration part
     global_ids = NULL;
-  } else {
-    freeDeclaredIDList(local_ids);
+  } else {  // local declaration part
+    freeDeclaredIDList(local_ids);  // delete previous declared local id list
     local_ids = NULL;
   }
 } // epsilon
 | type identifier_list ';' declarations	{
   int i;
-  if (end_of_global_decl == 0) {	// add to global ids
+  if (end_of_global_decl == 0) {  // add to global ids
     for (i = 0; i < $2->size; i++) {
       global_ids = addDeclaredIDToList(global_ids, newDeclaredID($2->ids[i], $1));
     }
-  } else {	// add to local ids
+  } else {  // add to local ids
     for (i = 0; i < $2->size; i++) {
       local_ids = addDeclaredIDToList(local_ids, newDeclaredID($2->ids[i], $1));
     }
@@ -71,6 +72,7 @@ declarations: {
 ;
 
 identifier_list: ID {
+  // initialize
   $$ = NULL;
   addIDToList($$, $1);
 }
