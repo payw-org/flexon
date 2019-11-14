@@ -40,4 +40,9 @@ IDList* addIDToList(IDList *list, char *id);
 DeclaredID* newDeclaredID(char *name, UniversalType *type);
 DeclaredIDList* addDeclaredIDToList(DeclaredIDList *list, DeclaredID *decl_id);
 
+void freeUniversalType(UniversalType *type);
+void freeIDList(IDList *list);
+void freeDeclaredID(DeclaredID *decl_id);
+void freeDeclaredIDList(DeclaredIDList *list);
+
 #endif //FLEXON_FLEXON_H

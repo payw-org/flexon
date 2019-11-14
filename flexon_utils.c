@@ -50,3 +50,27 @@ DeclaredIDList* addDeclaredIDToList(DeclaredIDList *list, DeclaredID *decl_id) {
   return list;
 }
 
+void freeUniversalType(UniversalType *type) {
+  free(type->type);
+  free(type);
+}
+
+void freeIDList(IDList *list) {
+  for (int i = 0; i < list->size; i++) {
+    free(list->ids[i]);
+  }
+  free(list);
+}
+
+void freeDeclaredID(DeclaredID *decl_id) {
+  free(decl_id->name);
+  freeUniversalType(decl_id->type);
+  free(decl_id);
+}
+
+void freeDeclaredIDList(DeclaredIDList *list) {
+  for (int i = 0; i < list->size; i++) {
+    freeDeclaredID(list->decl_ids[i]);
+  }
+  free(list);
+}

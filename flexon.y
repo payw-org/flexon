@@ -50,6 +50,7 @@ declarations:	{
 			if (end_of_global_decl == 0) {
 				global_ids = NULL;
 			} else {
+				freeDeclaredIDList(local_ids);
 				local_ids = NULL;
 			}
 		}	// epsilon
