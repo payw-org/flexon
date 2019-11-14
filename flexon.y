@@ -7,6 +7,7 @@
 	float fval;
 	char *sval;
 	UniversalType *utval;
+	IDList *ilval;
 }
 
 /* declare tokens */
@@ -32,6 +33,7 @@
 %type<sval> sign relop addop multop
 %type<sval> standard_type
 %type<utval> type
+%type<ilval> identifier_list
 
 %start program
 
@@ -44,8 +46,11 @@ declarations:	// epsilon
 		| type identifier_list ';' declarations
 ;
 
-identifier_list: ID
-		| ID ',' identifier_list
+identifier_list: ID				{
+			$$ = NULL;
+			addIDToList($$, $1);
+		}
+		| ID ',' identifier_list	{ $$ = addIDToList($3, $1); }
 ;
 
 type: standard_type			{ $$ = newType($1, 0); }

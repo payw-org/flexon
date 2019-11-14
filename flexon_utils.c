@@ -18,3 +18,15 @@ UniversalType* newType(char *type, int size) {
   return new;
 }
 
+IDList* addIDToList(IDList *list, char *id) {
+  if (list == NULL) {
+    list = (IDList*)malloc(sizeof(IDList));
+    list->size = 0;
+  }
+
+  list->ids[list->size] = id;
+  list->size++;
+
+  return list;
+}
+

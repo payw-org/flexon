@@ -17,8 +17,14 @@ typedef struct universal_type {
   int size;
 } UniversalType;
 
+typedef struct id_list {
+  int size;
+  char *ids[64];
+} IDList;
+
 void yywarning(const char *s);
 void yyerror(const char *s);
 
 UniversalType* newType(char *type, int size);
+IDList* addIDToList(IDList *list, char *id);
 #endif //FLEXON_FLEXON_H
