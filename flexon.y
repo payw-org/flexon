@@ -48,15 +48,7 @@ int end_of_global_decl;  // flag for detecting the end of global declaration
 program: Mainprog ID ';' declarations subprogram_declarations compound_statement
 ;
 
-declarations: {
-  // initialize
-  if (end_of_global_decl == 0) {  // global declaration part
-    global_ids = NULL;
-  } else {  // local declaration part
-    freeDeclaredIDList(local_ids);  // delete previous declared local id list
-    local_ids = NULL;
-  }
-} // epsilon
+declarations: // epsilon
 | type identifier_list ';' declarations	{
   int i;
   if (end_of_global_decl == 0) {  // add to global ids
@@ -97,17 +89,25 @@ standard_type: IntType {
 }
 ;
 
-subprogram_declarations: {
-  end_of_global_decl = 1;
-} // epsilon
+subprogram_declarations: // epsilon
 | subprogram_declaration subprogram_declarations
 ;
 
-subprogram_declaration: subprogram_head declarations compound_statement
+subprogram_declaration: subprogram_head declarations compound_statement {
+  // initialize local id list at the end of subprogram declaration
+  if (local_ids != NULL) {
+    freeDeclaredIDList(local_ids);
+    local_ids = NULL;
+  }
+}
 ;
 
-subprogram_head: Function ID arguments ':' standard_type ';'
-| Procedure ID arguments ';'
+subprogram_head: Function ID arguments ':' standard_type ';' {
+  end_of_global_decl = 1;
+}
+| Procedure ID arguments ';' {
+  end_of_global_decl = 1;
+}
 ;
 
 arguments: // epsilon
