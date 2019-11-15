@@ -1,5 +1,16 @@
-mainprog asdf;
-int[3] hello, one, you, two, good, me;
+mainprog test;
+int count, credit, length;
+float[5] weight, temperature;
+  function sum(foo, bar: int[5]; baz: float): int;
+  begin
+  nop
+  end
+
+  procedure hello;
+  float name;
+  begin
+  nop
+  end
 begin
 nop
 end
