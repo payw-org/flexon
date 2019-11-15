@@ -4,6 +4,8 @@
 DeclaredIDList *global_ids;  // global id list
 DeclaredIDList *local_ids;  // local id list
 int end_of_global_decl;  // flag for detecting the end of global declaration
+
+DeclaredFunctionList *functions; // function & procedure list
 %}
 
 %union {
@@ -12,6 +14,7 @@ int end_of_global_decl;  // flag for detecting the end of global declaration
   char *sval;
   UniversalType *utval;
   IDList *ilval;
+  DeclaredIDList *dilval;
 }
 
 /* declare tokens */
@@ -39,6 +42,7 @@ int end_of_global_decl;  // flag for detecting the end of global declaration
 %type<sval> standard_type
 %type<utval> type
 %type<ilval> identifier_list
+%type<dilval> parameter_list arguments
 
 /* Indicate start state */
 %start program
@@ -110,12 +114,27 @@ subprogram_head: Function ID arguments ':' standard_type ';' {
 }
 ;
 
-arguments: // epsilon
-| '(' parameter_list ')'
+arguments: {
+  $$ = NULL;
+}  // epsilon
+| '(' parameter_list ')' {
+  $$ = $2;
+}
 ;
 
-parameter_list: identifier_list ':' type
-| identifier_list ':' type ';' parameter_list
+parameter_list: identifier_list ':' type {
+  // initialize
+  $$ = NULL;
+  for (int i = 0; i < $1->size; i++) {
+    $$ = addDeclaredIDToList($$, newDeclaredID($1->ids[i], $3));
+  }
+}
+| identifier_list ':' type ';' parameter_list {
+  $$ = $5;
+  for (int i = 0; i < $1->size; i++) {
+    $$ = addDeclaredIDToList($$, newDeclaredID($1->ids[i], $3));
+  }
+}
 ;
 
 compound_statement: Begin statement_list End
