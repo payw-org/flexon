@@ -88,6 +88,27 @@ DeclaredIDList* addDeclaredIDToList(DeclaredIDList *list, DeclaredID *decl_id) {
   return list;
 }
 
+DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, char *return_type) {
+  DeclaredFunction *new = (DeclaredFunction*)malloc(sizeof(DeclaredFunction));
+  new->name = name;
+  new->parameters = parameters;
+  new->return_type = return_type;
+
+  return new;
+}
+
+DeclaredFunctionList* addDeclaredFunctionToList(DeclaredFunctionList* list, DeclaredFunction *decl_func) {
+  if (list == NULL) {
+    list = (DeclaredFunctionList*)malloc(sizeof(DeclaredFunctionList));
+    list->size = 0;
+  }
+
+  list->decl_funcs[list->size] = decl_func;
+  list->size++;
+
+  return list;
+}
+
 /**
  * Deallocate memory for the type.
  *
@@ -129,6 +150,29 @@ void freeDeclaredID(DeclaredID *decl_id) {
 void freeDeclaredIDList(DeclaredIDList *list) {
   for (int i = 0; i < list->size; i++) {
     freeDeclaredID(list->decl_ids[i]);
+  }
+  free(list);
+}
+
+/**
+ * Deallocate memory for the type.
+ *
+ * @param type
+ */
+void freeDeclaredFunction(DeclaredFunction *decl_func) {
+  free(decl_func->name);
+  freeDeclaredIDList(decl_func->parameters);
+  free(decl_func->return_type);
+}
+
+/**
+ * Deallocate memory for the type.
+ *
+ * @param type
+ */
+void freeDeclaredFunctionList(DeclaredFunctionList *list) {
+  for (int i = 0; i < list->size; i++) {
+    freeDeclaredFunction(list->decl_funcs[i]);
   }
   free(list);
 }

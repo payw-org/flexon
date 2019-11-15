@@ -108,9 +108,11 @@ subprogram_declaration: subprogram_head declarations compound_statement {
 
 subprogram_head: Function ID arguments ':' standard_type ';' {
   end_of_global_decl = 1;
+  functions = addDeclaredFunctionToList(functions, newDeclaredFunction($2, $3, $5));
 }
 | Procedure ID arguments ';' {
   end_of_global_decl = 1;
+  functions = addDeclaredFunctionToList(functions, newDeclaredFunction($2, $3, NULL));
 }
 ;
 
@@ -265,6 +267,7 @@ int main(int argc, char **argv) {
 	// initialize global variables
 	global_ids = NULL;
 	local_ids = NULL;
+	functions = NULL;
 	end_of_global_decl = 0;
 
 	// start parsing

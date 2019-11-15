@@ -51,6 +51,17 @@ typedef struct declared_id_list {
   DeclaredID *decl_ids[128];
 } DeclaredIDList;
 
+typedef struct declared_function {
+  char *name;
+  DeclaredIDList *parameters;
+  char *return_type;
+} DeclaredFunction;
+
+typedef struct declared_function_list {
+  int size;
+  DeclaredFunction *decl_funcs[128];
+} DeclaredFunctionList;
+
 void yywarning(const char *s);
 void yyerror(const char *s);
 
@@ -58,10 +69,14 @@ UniversalType* newType(char *type, int size);
 IDList* addIDToList(IDList *list, char *id);
 DeclaredID* newDeclaredID(char *name, UniversalType *type);
 DeclaredIDList* addDeclaredIDToList(DeclaredIDList *list, DeclaredID *decl_id);
+DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, char *return_type);
+DeclaredFunctionList* addDeclaredFunctionToList(DeclaredFunctionList* list, DeclaredFunction *decl_func);
 
 void freeUniversalType(UniversalType *type);
 void freeIDList(IDList *list);
 void freeDeclaredID(DeclaredID *decl_id);
 void freeDeclaredIDList(DeclaredIDList *list);
+void freeDeclaredFunction(DeclaredFunction *decl_func);
+void freeDeclaredFunctionList(DeclaredFunctionList *list);
 
 #endif //FLEXON_FLEXON_H
