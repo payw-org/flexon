@@ -231,7 +231,7 @@ multop: '*' {
 int main(int argc, char **argv) {
 	// invalid argument
 	if (argc != 2) {
-		printf("Invalid command line arguments.");
+		fprintf(stderr, "Invalid command line arguments.");
 		return 1;
 	}
 
@@ -239,7 +239,7 @@ int main(int argc, char **argv) {
 
 	// invalid file name
 	if ((file = fopen(argv[1], "r")) == NULL) {
-		printf("File is not exist.");
+		fprintf(stderr, "File is not exist.");
 		return 1;
 	}
 
