@@ -192,6 +192,7 @@ void freeDeclaredFunction(DeclaredFunction *decl_func) {
   free(decl_func->name);
   freeDeclaredIDList(decl_func->parameters);
   free(decl_func->return_type);
+  free(decl_func);
 }
 
 /**
@@ -223,4 +224,5 @@ void freeCollector(Collector *collector) {
   freeDeclaredIDList(collector->global_vars);
   freeDeclaredIDList(collector->local_vars);
   freeDeclaredFunctionList(collector->funcs);
+  free(collector);
 }
