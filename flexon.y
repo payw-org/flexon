@@ -1,11 +1,8 @@
 %{
 #include "flexon.h"
 
-DeclaredIDList *global_ids;  // global id list
-DeclaredIDList *local_ids;  // local id list
+Collector *collector;	// collector for the program's all identifiers
 int end_of_global_decl;  // flag for detecting the end of global declaration
-
-DeclaredFunctionList *functions; // function & procedure list
 %}
 
 %union {
@@ -57,11 +54,11 @@ declarations: // epsilon
   int i;
   if (end_of_global_decl == 0) {  // add to global ids
     for (i = 0; i < $2->size; i++) {
-      global_ids = addDeclaredIDToList(global_ids, newDeclaredID($2->ids[i], $1));
+      collector->global_vars = addDeclaredIDToList(collector->global_vars, newDeclaredID($2->ids[i], $1));
     }
   } else {  // add to local ids
     for (i = 0; i < $2->size; i++) {
-      local_ids = addDeclaredIDToList(local_ids, newDeclaredID($2->ids[i], $1));
+      collector->local_vars = addDeclaredIDToList(collector->local_vars, newDeclaredID($2->ids[i], $1));
     }
   }
 }
@@ -99,18 +96,18 @@ subprogram_declarations: // epsilon
 
 subprogram_declaration: subprogram_head declarations compound_statement {
   // initialize local id list at the end of subprogram declaration
-  freeDeclaredIDList(local_ids);
-  local_ids = NULL;
+  freeDeclaredIDList(collector->local_vars);
+  collector->local_vars = NULL;
 }
 ;
 
 subprogram_head: Function ID arguments ':' standard_type ';' {
   end_of_global_decl = 1;
-  functions = addDeclaredFunctionToList(functions, newDeclaredFunction($2, $3, $5));
+  collector->funcs = addDeclaredFunctionToList(collector->funcs, newDeclaredFunction($2, $3, $5));
 }
 | Procedure ID arguments ';' {
   end_of_global_decl = 1;
-  functions = addDeclaredFunctionToList(functions, newDeclaredFunction($2, $3, NULL));
+  collector->funcs = addDeclaredFunctionToList(collector->funcs, newDeclaredFunction($2, $3, NULL));
 }
 ;
 
@@ -263,9 +260,7 @@ int main(int argc, char **argv) {
 	}
 
 	// initialize global variables
-	global_ids = NULL;
-	local_ids = NULL;
-	functions = NULL;
+	collector = newCollector();
 	end_of_global_decl = 0;
 
 	// start parsing
@@ -274,6 +269,8 @@ int main(int argc, char **argv) {
 	do {
 		yyparse();
 	} while(!feof(yyin));
+
+	freeCollector(collector);
 
 	return 0;
 }

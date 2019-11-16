@@ -77,6 +77,8 @@ DeclaredID* newDeclaredID(char *name, UniversalType *type);
 DeclaredIDList* addDeclaredIDToList(DeclaredIDList *list, DeclaredID *decl_id);
 DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, char *return_type);
 DeclaredFunctionList* addDeclaredFunctionToList(DeclaredFunctionList* list, DeclaredFunction *decl_func);
+Collector* newCollector();
+
 
 void freeUniversalType(UniversalType *type);
 void freeIDList(IDList *list);

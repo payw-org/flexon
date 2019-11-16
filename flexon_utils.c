@@ -109,6 +109,15 @@ DeclaredFunctionList* addDeclaredFunctionToList(DeclaredFunctionList* list, Decl
   return list;
 }
 
+Collector* newCollector() {
+  Collector *new = (Collector*)malloc(sizeof(Collector));
+  new->global_vars = NULL;
+  new->local_vars = NULL;
+  new->funcs = NULL;
+
+  return new;
+}
+
 /**
  * Deallocate memory for the type.
  *
