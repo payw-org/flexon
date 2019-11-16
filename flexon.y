@@ -54,11 +54,11 @@ declarations: // epsilon
   int i;
   if (end_of_global_decl == 0) {  // add to global ids
     for (i = 0; i < $2->size; i++) {
-      collector->global_vars = addDeclaredIDToList(collector->global_vars, newDeclaredID($2->ids[i], $1));
+      addDeclaredIDToList(&(collector->global_vars), newDeclaredID($2->ids[i], $1));
     }
   } else {  // add to local ids
     for (i = 0; i < $2->size; i++) {
-      collector->local_vars = addDeclaredIDToList(collector->local_vars, newDeclaredID($2->ids[i], $1));
+      addDeclaredIDToList(&(collector->local_vars), newDeclaredID($2->ids[i], $1));
     }
   }
 }
@@ -67,10 +67,11 @@ declarations: // epsilon
 identifier_list: ID {
   // initialize
   $$ = NULL;
-  $$ = addIDToList($$, $1);
+  addIDToList(&$$, $1);
 }
 | ID ',' identifier_list  {
-  $$ = addIDToList($3, $1);
+  addIDToList(&$3, $1);
+  $$ = $3;
 }
 ;
 
@@ -103,11 +104,11 @@ subprogram_declaration: subprogram_head declarations compound_statement {
 
 subprogram_head: Function ID arguments ':' standard_type ';' {
   end_of_global_decl = 1;
-  collector->funcs = addDeclaredFunctionToList(collector->funcs, newDeclaredFunction($2, $3, $5));
+  addDeclaredFunctionToList(&(collector->funcs), newDeclaredFunction($2, $3, $5));
 }
 | Procedure ID arguments ';' {
   end_of_global_decl = 1;
-  collector->funcs = addDeclaredFunctionToList(collector->funcs, newDeclaredFunction($2, $3, NULL));
+  addDeclaredFunctionToList(&(collector->funcs), newDeclaredFunction($2, $3, NULL));
 }
 ;
 
@@ -123,13 +124,13 @@ parameter_list: identifier_list ':' type {
   // initialize
   $$ = NULL;
   for (int i = 0; i < $1->size; i++) {
-    $$ = addDeclaredIDToList($$, newDeclaredID($1->ids[i], $3));
+    addDeclaredIDToList(&$$, newDeclaredID($1->ids[i], $3));
   }
 }
 | identifier_list ':' type ';' parameter_list {
   $$ = $5;
   for (int i = 0; i < $1->size; i++) {
-    $$ = addDeclaredIDToList($$, newDeclaredID($1->ids[i], $3));
+    addDeclaredIDToList(&$$, newDeclaredID($1->ids[i], $3));
   }
 }
 ;

@@ -72,11 +72,11 @@ void yywarning(const char *s);
 void yyerror(const char *s);
 
 UniversalType* newType(char *type, int size);
-IDList* addIDToList(IDList *list, char *id);
+void addIDToList(IDList **list, char *id);
 DeclaredID* newDeclaredID(char *name, UniversalType *type);
-DeclaredIDList* addDeclaredIDToList(DeclaredIDList *list, DeclaredID *decl_id);
+void addDeclaredIDToList(DeclaredIDList **list, DeclaredID *decl_id);
 DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, char *return_type);
-DeclaredFunctionList* addDeclaredFunctionToList(DeclaredFunctionList* list, DeclaredFunction *decl_func);
+void addDeclaredFunctionToList(DeclaredFunctionList **list, DeclaredFunction *decl_func);
 Collector* newCollector();
 
 void printUniversalType(UniversalType *type);

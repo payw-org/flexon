@@ -40,18 +40,15 @@ UniversalType* newType(char *type, int size) {
  *
  * @param list
  * @param id
- * @return
  */
-IDList* addIDToList(IDList *list, char *id) {
-  if (list == NULL) {
-    list = (IDList*)malloc(sizeof(IDList));
-    list->size = 0;
+void addIDToList(IDList **list, char *id) {
+  if (*list == NULL) {
+    *list = (IDList*)malloc(sizeof(IDList));
+    (*list)->size = 0;
   }
 
-  list->ids[list->size] = id;
-  list->size++;
-
-  return list;
+  (*list)->ids[(*list)->size] = id;
+  (*list)->size++;
 }
 
 /**
@@ -74,18 +71,15 @@ DeclaredID* newDeclaredID(char *name, UniversalType *type) {
  *
  * @param list
  * @param decl_id
- * @return
  */
-DeclaredIDList* addDeclaredIDToList(DeclaredIDList *list, DeclaredID *decl_id) {
-  if (list == NULL) {
-    list = (DeclaredIDList*)malloc(sizeof(DeclaredIDList));
-    list->size = 0;
+void addDeclaredIDToList(DeclaredIDList **list, DeclaredID *decl_id) {
+  if (*list == NULL) {
+    *list = (DeclaredIDList*)malloc(sizeof(DeclaredIDList));
+    (*list)->size = 0;
   }
 
-  list->decl_ids[list->size] = decl_id;
-  list->size++;
-
-  return list;
+  (*list)->decl_ids[(*list)->size] = decl_id;
+  (*list)->size++;
 }
 
 DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, char *return_type) {
@@ -97,16 +91,14 @@ DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, ch
   return new;
 }
 
-DeclaredFunctionList* addDeclaredFunctionToList(DeclaredFunctionList* list, DeclaredFunction *decl_func) {
-  if (list == NULL) {
-    list = (DeclaredFunctionList*)malloc(sizeof(DeclaredFunctionList));
-    list->size = 0;
+void addDeclaredFunctionToList(DeclaredFunctionList **list, DeclaredFunction *decl_func) {
+  if (*list == NULL) {
+    *list = (DeclaredFunctionList*)malloc(sizeof(DeclaredFunctionList));
+    (*list)->size = 0;
   }
 
-  list->decl_funcs[list->size] = decl_func;
-  list->size++;
-
-  return list;
+  (*list)->decl_funcs[(*list)->size] = decl_func;
+  (*list)->size++;
 }
 
 Collector* newCollector() {
