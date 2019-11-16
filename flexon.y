@@ -99,10 +99,8 @@ subprogram_declarations: // epsilon
 
 subprogram_declaration: subprogram_head declarations compound_statement {
   // initialize local id list at the end of subprogram declaration
-  if (local_ids != NULL) {
-    freeDeclaredIDList(local_ids);
-    local_ids = NULL;
-  }
+  freeDeclaredIDList(local_ids);
+  local_ids = NULL;
 }
 ;
 

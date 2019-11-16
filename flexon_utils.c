@@ -115,6 +115,10 @@ DeclaredFunctionList* addDeclaredFunctionToList(DeclaredFunctionList* list, Decl
  * @param type
  */
 void freeUniversalType(UniversalType *type) {
+  if (type == NULL) {
+    return;
+  }
+
   free(type->type);
   free(type);
 }
@@ -125,6 +129,10 @@ void freeUniversalType(UniversalType *type) {
  * @param type
  */
 void freeIDList(IDList *list) {
+  if (list == NULL) {
+    return;
+  }
+
   for (int i = 0; i < list->size; i++) {
     free(list->ids[i]);
   }
@@ -137,6 +145,10 @@ void freeIDList(IDList *list) {
  * @param type
  */
 void freeDeclaredID(DeclaredID *decl_id) {
+  if (decl_id == NULL) {
+    return;
+  }
+
   free(decl_id->name);
   freeUniversalType(decl_id->type);
   free(decl_id);
@@ -148,6 +160,10 @@ void freeDeclaredID(DeclaredID *decl_id) {
  * @param type
  */
 void freeDeclaredIDList(DeclaredIDList *list) {
+  if (list == NULL) {
+    return;
+  }
+
   for (int i = 0; i < list->size; i++) {
     freeDeclaredID(list->decl_ids[i]);
   }
@@ -160,6 +176,10 @@ void freeDeclaredIDList(DeclaredIDList *list) {
  * @param type
  */
 void freeDeclaredFunction(DeclaredFunction *decl_func) {
+  if (decl_func == NULL) {
+    return;
+  }
+
   free(decl_func->name);
   freeDeclaredIDList(decl_func->parameters);
   free(decl_func->return_type);
@@ -171,6 +191,10 @@ void freeDeclaredFunction(DeclaredFunction *decl_func) {
  * @param type
  */
 void freeDeclaredFunctionList(DeclaredFunctionList *list) {
+  if (list == NULL) {
+    return;
+  }
+
   for (int i = 0; i < list->size; i++) {
     freeDeclaredFunction(list->decl_funcs[i]);
   }
