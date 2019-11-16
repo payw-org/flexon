@@ -119,6 +119,146 @@ Collector* newCollector() {
 }
 
 /**
+ * Print this type to standard output.
+ * Ex)
+ *  `int[5]`
+ *
+ * @param type
+ */
+void printUniversalType(UniversalType *type) {
+  if (type == NULL) {
+    return;
+  }
+
+  printf("%s", type->type);
+  if (type->size > 0) {
+    printf("[%d]", type->size);
+  }
+}
+
+/**
+ * Print this type to standard output.
+ * Ex)
+ *  `int[5] arr`
+ *
+ * @param type
+ */
+void printDeclaredID(DeclaredID *decl_id) {
+  if (decl_id == NULL) {
+    return;
+  }
+
+  printUniversalType(decl_id->type);
+  printf(" ");
+  printf("%s", decl_id->name);
+}
+
+/**
+ * Print this type to standard output.
+ * Ex)
+ *  `int[5] arr, float var, float[3] arr2`
+ *
+ * @param type
+ */
+void printDeclaredIDList(DeclaredIDList *list) {
+  if (list == NULL) {
+    return;
+  }
+
+  int i;
+  for (i = 0; i < list->size - 1; i++) {
+    printDeclaredID(list->decl_ids[i]);
+    printf(", ");
+  }
+  printDeclaredID(list->decl_ids[i]);
+}
+
+/**
+ * Print this type to standard output.
+ * Ex)
+ *  `<Function>
+ *    name: func
+ *    return type: int
+ *    params: int[5] arr, float var, float[3] arr2
+ *  `
+ *
+ * @param type
+ */
+void printDeclaredFunction(DeclaredFunction *decl_func) {
+  if (decl_func == NULL) {
+    return;
+  }
+
+  printf("<Function>\n");
+  printf("\tname: %s\n", decl_func->name);
+  printf("\treturn type: %s\n", decl_func->return_type);
+  printf("\tparams: ");
+  printDeclaredIDList(decl_func->parameters);
+  printf("\n");
+}
+
+/**
+ * Print this type to standard output.
+ * Ex)
+ *  `<Function>
+ *    name: func
+ *    return type: int
+ *    params: int[5] arr, float var, float[3] arr2
+ *  <Function>
+ *    name: func2
+ *    return type: float
+ *    params: int[5] arr3, float var2, float[3] arr4
+ *  `
+ *
+ * @param type
+ */
+void printDeclaredFunctionList(DeclaredFunctionList *list) {
+  if (list == NULL) {
+    return;
+  }
+
+  for (int i = 0; i < list->size; i++) {
+    printDeclaredFunction(list->decl_funcs[i]);
+  }
+}
+
+/**
+ * Print this type to standard output.
+ * Ex)
+ *  `<Global variables>
+ *    int[5] arr, float var, float[3] arr2
+ *  <Local variables>
+ *    int[3] arr3, float var2, float[2] arr4
+ *  <Function>
+ *    name: func
+ *    return type: int
+ *    params: int[5] arr5, float var3, float[3] arr6
+ *  <Function>
+ *    name: func2
+ *    return type: float
+ *    params: int[5] arr7, float var4, float[3] arr8
+ *  `
+ *
+ * @param type
+ */
+void printCollector(Collector *collector) {
+  if (collector == NULL) {
+    return;
+  }
+
+  printf("\n\n");
+  printf("<Global variables>\n");
+  printf("\t");
+  printDeclaredIDList(collector->global_vars);
+  printf("\n");
+  printf("<Local variables>\n");
+  printf("\t");
+  printDeclaredIDList(collector->local_vars);
+  printf("\n");
+  printDeclaredFunctionList(collector->funcs);
+}
+
+/**
  * Deallocate memory for the type.
  *
  * @param type

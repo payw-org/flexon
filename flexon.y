@@ -270,6 +270,7 @@ int main(int argc, char **argv) {
 		yyparse();
 	} while(!feof(yyin));
 
+	printCollector(collector);
 	freeCollector(collector);
 
 	return 0;

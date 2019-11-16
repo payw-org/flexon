@@ -79,6 +79,12 @@ DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, ch
 DeclaredFunctionList* addDeclaredFunctionToList(DeclaredFunctionList* list, DeclaredFunction *decl_func);
 Collector* newCollector();
 
+void printUniversalType(UniversalType *type);
+void printDeclaredID(DeclaredID *decl_id);
+void printDeclaredIDList(DeclaredIDList *list);
+void printDeclaredFunction(DeclaredFunction *decl_func);
+void printDeclaredFunctionList(DeclaredFunctionList *list);
+void printCollector(Collector *collector);
 
 void freeUniversalType(UniversalType *type);
 void freeIDList(IDList *list);
