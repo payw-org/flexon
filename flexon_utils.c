@@ -159,7 +159,7 @@ void freeDeclaredID(DeclaredID *decl_id) {
   }
 
   free(decl_id->name);
-  freeUniversalType(decl_id->type);
+//  freeUniversalType(decl_id->type); @TODO: resolve double free error
   free(decl_id);
 }
 
