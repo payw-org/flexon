@@ -63,9 +63,9 @@ typedef struct declared_function_list {
 } DeclaredFunctionList;
 
 typedef struct collector {
-  DeclaredIDList *global_vars;
-  DeclaredIDList *local_vars;
-  DeclaredFunctionList *funcs;
+  DeclaredIDList *global_vars;  // global variable list
+  DeclaredIDList *local_vars; // local variable list
+  DeclaredFunctionList *funcs;  // function & procedure list
 } Collector;
 
 void yywarning(const char *s);
