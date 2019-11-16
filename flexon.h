@@ -62,6 +62,12 @@ typedef struct declared_function_list {
   DeclaredFunction *decl_funcs[128];
 } DeclaredFunctionList;
 
+typedef struct collector {
+  DeclaredIDList *global_vars;
+  DeclaredIDList *local_vars;
+  DeclaredFunctionList *funcs;
+} Collector;
+
 void yywarning(const char *s);
 void yyerror(const char *s);
 
@@ -78,5 +84,6 @@ void freeDeclaredID(DeclaredID *decl_id);
 void freeDeclaredIDList(DeclaredIDList *list);
 void freeDeclaredFunction(DeclaredFunction *decl_func);
 void freeDeclaredFunctionList(DeclaredFunctionList *list);
+void freeCollector(Collector *collector);
 
 #endif //FLEXON_FLEXON_H

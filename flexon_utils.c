@@ -200,3 +200,18 @@ void freeDeclaredFunctionList(DeclaredFunctionList *list) {
   }
   free(list);
 }
+
+/**
+ * Deallocate memory for the type.
+ *
+ * @param type
+ */
+void freeCollector(Collector *collector) {
+  if (collector == NULL) {
+    return;
+  }
+
+  freeDeclaredIDList(collector->global_vars);
+  freeDeclaredIDList(collector->local_vars);
+  freeDeclaredFunctionList(collector->funcs);
+}
