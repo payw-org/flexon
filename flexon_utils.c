@@ -19,6 +19,13 @@ void yaccError(int lineno, char *s, ...) {
   fprintf(stderr, "\n");
 }
 
+IDList* newIDList() {
+  IDList *new = (IDList*)malloc(sizeof(IDList));
+  new->size = 0;
+
+  return new;
+}
+
 /**
  * Create the new type.
  *
@@ -32,22 +39,6 @@ UniversalType* newType(char *type, int size) {
   new->size = size;
 
   return new;
-}
-
-/**
- * Add new identifier to list.
- *
- * @param list
- * @param id
- */
-void addIDToList(IDList **list, char *id) {
-  if (*list == NULL) {
-    *list = (IDList*)malloc(sizeof(IDList));
-    (*list)->size = 0;
-  }
-
-  (*list)->ids[(*list)->size] = id;
-  (*list)->size++;
 }
 
 /**
@@ -65,20 +56,11 @@ DeclaredID* newDeclaredID(char *name, UniversalType *type) {
   return new;
 }
 
-/**
- * Add new declared id to list.
- *
- * @param list
- * @param decl_id
- */
-void addDeclaredIDToList(DeclaredIDList **list, DeclaredID *decl_id) {
-  if (*list == NULL) {
-    *list = (DeclaredIDList*)malloc(sizeof(DeclaredIDList));
-    (*list)->size = 0;
-  }
+DeclaredIDList* newDeclaredIDList() {
+  DeclaredIDList *new = (DeclaredIDList*)malloc(sizeof(DeclaredIDList));
+  new->size = 0;
 
-  (*list)->decl_ids[(*list)->size] = decl_id;
-  (*list)->size++;
+  return new;
 }
 
 DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, char *return_type) {
@@ -90,23 +72,47 @@ DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, ch
   return new;
 }
 
-void addDeclaredFunctionToList(DeclaredFunctionList **list, DeclaredFunction *decl_func) {
-  if (*list == NULL) {
-    *list = (DeclaredFunctionList*)malloc(sizeof(DeclaredFunctionList));
-    (*list)->size = 0;
-  }
+DeclaredFunctionList* newDeclaredFunctionList() {
+  DeclaredFunctionList *new = (DeclaredFunctionList*)malloc(sizeof(DeclaredFunctionList));
+  new->size = 0;
 
-  (*list)->decl_funcs[(*list)->size] = decl_func;
-  (*list)->size++;
+  return new;
 }
 
 Collector* newCollector() {
   Collector *new = (Collector*)malloc(sizeof(Collector));
-  new->global_vars = NULL;
-  new->local_vars = NULL;
-  new->funcs = NULL;
+  new->global_vars = newDeclaredIDList();
+  new->local_vars = newDeclaredIDList();
+  new->funcs = newDeclaredFunctionList();
 
   return new;
+}
+
+/**
+ * Add new identifier to list.
+ *
+ * @param list
+ * @param id
+ */
+void addIDToList(IDList **list, char *id) {
+  (*list)->ids[(*list)->size] = id;
+  (*list)->size++;
+}
+
+/**
+ * Add new declared id to list.
+ *
+ * @param list
+ * @param decl_id
+ */
+void addDeclaredIDToList(DeclaredIDList **list, DeclaredID *decl_id) {
+  (*list)->decl_ids[(*list)->size] = decl_id;
+  (*list)->size++;
+}
+
+void addDeclaredFunctionToList(DeclaredFunctionList **list, DeclaredFunction *decl_func) {
+  (*list)->decl_funcs[(*list)->size] = decl_func;
+  (*list)->size++;
 }
 
 /**

@@ -72,13 +72,17 @@ typedef struct collector {
 void yyerror(const char *);
 void yaccError(int lineno, char *s, ...);
 
+IDList* newIDList();
 UniversalType* newType(char *type, int size);
-void addIDToList(IDList **list, char *id);
 DeclaredID* newDeclaredID(char *name, UniversalType *type);
-void addDeclaredIDToList(DeclaredIDList **list, DeclaredID *decl_id);
+DeclaredIDList* newDeclaredIDList();
 DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, char *return_type);
-void addDeclaredFunctionToList(DeclaredFunctionList **list, DeclaredFunction *decl_func);
+DeclaredFunctionList* newDeclaredFunctionList();
 Collector* newCollector();
+
+void addIDToList(IDList **list, char *id);
+void addDeclaredIDToList(DeclaredIDList **list, DeclaredID *decl_id);
+void addDeclaredFunctionToList(DeclaredFunctionList **list, DeclaredFunction *decl_func);
 
 void printUniversalType(UniversalType *type);
 void printDeclaredID(DeclaredID *decl_id);
