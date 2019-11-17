@@ -158,7 +158,7 @@ void printDeclaredID(DeclaredID *decl_id) {
  * @param type
  */
 void printDeclaredIDList(DeclaredIDList *list) {
-  if (list == NULL) {
+  if (list == NULL || list->size == 0) {
     return;
   }
 
@@ -210,7 +210,7 @@ void printDeclaredFunction(DeclaredFunction *decl_func) {
  * @param type
  */
 void printDeclaredFunctionList(DeclaredFunctionList *list) {
-  if (list == NULL) {
+  if (list == NULL || list->size == 0) {
     return;
   }
 
