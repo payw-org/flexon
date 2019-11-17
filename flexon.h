@@ -86,6 +86,7 @@ void addDeclaredIDToList(DeclaredIDList **list, DeclaredID *decl_id);
 void addDeclaredFunctionToList(DeclaredFunctionList **list, DeclaredFunction *decl_func);
 
 void collectGlobalVars(Collector **collector, UniversalType *type, IDList *id_list);
+void collectLocalVars(Collector **collector, UniversalType *type, IDList *id_list);
 
 void printUniversalType(UniversalType *type);
 void printDeclaredID(DeclaredID *decl_id);

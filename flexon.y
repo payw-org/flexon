@@ -58,9 +58,7 @@ declaration: type identifier_list ';' {
   if (end_of_global_decl == 0) {  // collect global variables
     collectGlobalVars(&collector, $1, $2);
   } else {  // collect local variables
-    for (i = 0; i < $2->size; i++) {
-      addDeclaredIDToList(&(collector->local_vars), newDeclaredID($2->ids[i], $1));
-    }
+    collectLocalVars(&collector, $1, $2);
   }
 }
 ;

@@ -189,6 +189,48 @@ void collectGlobalVars(Collector **collector, UniversalType *type, IDList *id_li
   }
 }
 
+void collectLocalVars(Collector **collector, UniversalType *type, IDList *id_list) {
+  int i, j;
+  int is_duplicate;
+  char *new_name, *declared_name;
+  DeclaredFunction *curr_func = (*collector)->funcs->decl_funcs[(*collector)->funcs->size - 1];
+
+  for (i = id_list->size - 1; i >= 0; i--) {
+    is_duplicate = 0;
+    new_name = id_list->ids[i];
+
+    // check among the function parameters
+    for (j = 0; j < curr_func->parameters->size; j++) {
+      declared_name = curr_func->parameters->decl_ids[j]->name;
+
+      // already declared
+      if (strcmp(new_name, declared_name) == 0) {
+        is_duplicate = 1;
+        yaccError(id_list->decl_lineno, "Duplicate identifier \"%s\"", new_name);
+        break;
+      }
+    }
+
+    // check among the local variables
+    if (!is_duplicate) {
+      for (j = 0; j < (*collector)->local_vars->size; j++) {
+        declared_name = (*collector)->local_vars->decl_ids[j]->name;
+
+        // already declared
+        if (strcmp(new_name, declared_name) == 0) {
+          is_duplicate = 1;
+          yaccError(id_list->decl_lineno, "Duplicate identifier \"%s\"", new_name);
+          break;
+        }
+      }
+
+      if (!is_duplicate) {
+        addDeclaredIDToList(&((*collector)->local_vars), newDeclaredID(new_name, type));
+      }
+    }
+  }
+}
+
 /**
  * Print this type to standard output.
  * Ex)
