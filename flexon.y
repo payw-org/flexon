@@ -52,11 +52,11 @@ program: Mainprog ID ';' declarations subprogram_declarations compound_statement
 declarations: // epsilon
 | type identifier_list ';' declarations	{
   int i;
-  if (end_of_global_decl == 0) {  // add to global ids
+  if (end_of_global_decl == 0) {  // collect global variables
     for (i = 0; i < $2->size; i++) {
       addDeclaredIDToList(&(collector->global_vars), newDeclaredID($2->ids[i], $1));
     }
-  } else {  // add to local ids
+  } else {  // collect local variables
     for (i = 0; i < $2->size; i++) {
       addDeclaredIDToList(&(collector->local_vars), newDeclaredID($2->ids[i], $1));
     }
@@ -66,7 +66,7 @@ declarations: // epsilon
 
 identifier_list: ID {
   // initialize
-  $$ = NULL;
+  $$ = newIDList();
   addIDToList(&$$, $1);
 }
 | ID ',' identifier_list  {
@@ -98,7 +98,7 @@ subprogram_declarations: // epsilon
 subprogram_declaration: subprogram_head declarations compound_statement {
   // initialize local id list at the end of subprogram declaration
   freeDeclaredIDList(collector->local_vars);
-  collector->local_vars = NULL;
+  collector->local_vars = newDeclaredIDList();
 }
 ;
 
@@ -122,7 +122,7 @@ arguments: {
 
 parameter_list: identifier_list ':' type {
   // initialize
-  $$ = NULL;
+  $$ = newDeclaredIDList();
   for (int i = 0; i < $1->size; i++) {
     addDeclaredIDToList(&$$, newDeclaredID($1->ids[i], $3));
   }
