@@ -84,14 +84,14 @@ DeclaredIDList* newDeclaredIDList() {
  * Create declared function.
  *
  * @param name
- * @param parameters
+ * @param arguments
  * @param return_type
  * @return
  */
-DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, char *return_type) {
+DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *arguments, char *return_type) {
   DeclaredFunction *new = (DeclaredFunction*)malloc(sizeof(DeclaredFunction));
   new->name = name;
-  new->parameters = parameters;
+  new->arguments = arguments;
   new->return_type = return_type;
 
   return new;
@@ -178,7 +178,7 @@ void collectGlobalVars(Collector **collector, UniversalType *type, IDList *id_li
       // already declared
       if (strcmp(new_name, declared_name) == 0) {
         is_duplicate = 1;
-        yaccError(id_list->decl_lineno, "Duplicate identifier \"%s\"", new_name);
+        yaccError(id_list->decl_lineno, "Duplicate variable name \"%s\"", new_name);
         break;
       }
     }
@@ -199,14 +199,14 @@ void collectLocalVars(Collector **collector, UniversalType *type, IDList *id_lis
     is_duplicate = 0;
     new_name = id_list->ids[i];
 
-    // check among the function parameters
-    for (j = 0; j < curr_func->parameters->size; j++) {
-      declared_name = curr_func->parameters->decl_ids[j]->name;
+    // check among the function arguments
+    for (j = 0; j < curr_func->arguments->size; j++) {
+      declared_name = curr_func->arguments->decl_ids[j]->name;
 
       // already declared
       if (strcmp(new_name, declared_name) == 0) {
         is_duplicate = 1;
-        yaccError(id_list->decl_lineno, "Duplicate identifier \"%s\"", new_name);
+        yaccError(id_list->decl_lineno, "Duplicate variable name \"%s\"", new_name);
         break;
       }
     }
@@ -219,7 +219,7 @@ void collectLocalVars(Collector **collector, UniversalType *type, IDList *id_lis
         // already declared
         if (strcmp(new_name, declared_name) == 0) {
           is_duplicate = 1;
-          yaccError(id_list->decl_lineno, "Duplicate identifier \"%s\"", new_name);
+          yaccError(id_list->decl_lineno, "Duplicate variable name \"%s\"", new_name);
           break;
         }
       }
@@ -306,7 +306,7 @@ void printDeclaredFunction(DeclaredFunction *decl_func) {
   printf("\tname: %s\n", decl_func->name);
   printf("\treturn type: %s\n", decl_func->return_type);
   printf("\tparams: ");
-  printDeclaredIDList(decl_func->parameters);
+  printDeclaredIDList(decl_func->arguments);
   printf("\n");
 }
 
@@ -443,7 +443,7 @@ void freeDeclaredFunction(DeclaredFunction *decl_func) {
   }
 
   free(decl_func->name);
-  freeDeclaredIDList(decl_func->parameters);
+  freeDeclaredIDList(decl_func->arguments);
   free(decl_func->return_type);
   free(decl_func);
 }

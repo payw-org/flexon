@@ -55,7 +55,7 @@ typedef struct declared_id_list {
 
 typedef struct declared_function {
   char *name;
-  DeclaredIDList *parameters;
+  DeclaredIDList *arguments;
   char *return_type;
 } DeclaredFunction;
 
@@ -77,7 +77,7 @@ IDList* newIDList(int lineno);
 UniversalType* newType(char *type, int size);
 DeclaredID* newDeclaredID(char *name, UniversalType *type);
 DeclaredIDList* newDeclaredIDList();
-DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, char *return_type);
+DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *arguments, char *return_type);
 DeclaredFunctionList* newDeclaredFunctionList();
 Collector* newCollector();
 
