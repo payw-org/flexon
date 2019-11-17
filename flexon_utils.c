@@ -231,6 +231,21 @@ void collectLocalVars(Collector **collector, UniversalType *type, IDList *id_lis
   }
 }
 
+void collectFuncs(Collector **collector, char *name, DeclaredIDList *arguments, char *return_type, int lineno) {
+  int i;
+  DeclaredFunction *declared_func;
+
+  for (i = 0; i < (*collector)->funcs->size; i++) {
+    declared_func = (*collector)->funcs->decl_funcs[i];
+    if (strcmp(name, declared_func->name) == 0) {
+      yaccError(lineno, "Duplicate function name \"%s\"", name);
+      return;
+    }
+  }
+
+  addDeclaredFunctionToList(&((*collector)->funcs), newDeclaredFunction(name, arguments, return_type));
+}
+
 /**
  * Print this type to standard output.
  * Ex)

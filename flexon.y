@@ -103,11 +103,11 @@ subprogram_declaration: subprogram_head declarations compound_statement {
 
 subprogram_head: Function ID arguments ':' standard_type ';' {
   end_of_global_decl = 1;
-  addDeclaredFunctionToList(&(collector->funcs), newDeclaredFunction($2, $3, $5));
+  collectFuncs(&collector, $2, $3, $5, yylineno);
 }
 | Procedure ID arguments ';' {
   end_of_global_decl = 1;
-  addDeclaredFunctionToList(&(collector->funcs), newDeclaredFunction($2, $3, NULL));
+  collectFuncs(&collector, $2, $3, NULL, yylineno);
 }
 ;
 
