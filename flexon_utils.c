@@ -1,13 +1,8 @@
 #include "flexon.h"
 #include "flexon.tab.h"
 
-/**
- * Print the warning statement.
- *
- * @param s
- */
-void yywarning(const char *s) {
-  fprintf(stdout, "Warning: %s\n", s);
+void yyerror (char const *s) {
+  fprintf (stderr, "%s\n", s);
 }
 
 /**
@@ -15,9 +10,13 @@ void yywarning(const char *s) {
  *
  * @param s
  */
-void yyerror(const char *s) {
-  fprintf(stderr, "Error: %s\n", s);
-  exit(1);
+void yaccError(int lineno, char *s, ...) {
+  va_list ap;
+  va_start(ap, s);
+
+  fprintf(stderr, "Line (%d) Error: ", lineno);
+  vfprintf(stderr, s, ap);
+  fprintf(stderr, "\n");
 }
 
 /**

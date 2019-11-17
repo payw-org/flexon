@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #define YYDEBUG 1 // debug mode
 
@@ -68,8 +69,8 @@ typedef struct collector {
   DeclaredFunctionList *funcs;  // function & procedure list
 } Collector;
 
-void yywarning(const char *s);
-void yyerror(const char *s);
+void yyerror(const char *);
+void yaccError(int lineno, char *s, ...);
 
 UniversalType* newType(char *type, int size);
 void addIDToList(IDList **list, char *id);
