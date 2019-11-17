@@ -31,7 +31,7 @@ typedef struct universal_type {
 typedef struct id_list {
   int size;
   char *ids[64];
-  int declared_lineno;
+  int decl_lineno;
 } IDList;
 
 /**

@@ -33,7 +33,7 @@ void yaccError(int lineno, char *s, ...) {
 IDList* newIDList(int lineno) {
   IDList *new = (IDList*)malloc(sizeof(IDList));
   new->size = 0;
-  new->declared_lineno = lineno;
+  new->decl_lineno = lineno;
 
   return new;
 }
@@ -178,7 +178,7 @@ void collectGlobalVars(Collector **collector, UniversalType *type, IDList *id_li
       // already declared
       if (strcmp(new_name, declared_name) == 0) {
         is_duplicate = 1;
-        yaccError(id_list->declared_lineno, "Duplicate identifier \"%s\"", new_name);
+        yaccError(id_list->decl_lineno, "Duplicate identifier \"%s\"", new_name);
         break;
       }
     }
