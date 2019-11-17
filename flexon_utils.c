@@ -1,12 +1,17 @@
 #include "flexon.h"
 #include "flexon.tab.h"
 
+/**
+ * Default yacc error printer.
+ *
+ * @param s
+ */
 void yyerror (char const *s) {
   fprintf (stderr, "%s\n", s);
 }
 
 /**
- * Print the error statement.
+ * Custom yacc error printer which show error occurred line number.
  *
  * @param s
  */
@@ -19,6 +24,12 @@ void yaccError(int lineno, char *s, ...) {
   fprintf(stderr, "\n");
 }
 
+/**
+ * Create new identifier list.
+ *
+ * @param lineno Declared line number
+ * @return
+ */
 IDList* newIDList(int lineno) {
   IDList *new = (IDList*)malloc(sizeof(IDList));
   new->size = 0;
@@ -57,6 +68,11 @@ DeclaredID* newDeclaredID(char *name, UniversalType *type) {
   return new;
 }
 
+/**
+ * Create declared id list.
+ *
+ * @return
+ */
 DeclaredIDList* newDeclaredIDList() {
   DeclaredIDList *new = (DeclaredIDList*)malloc(sizeof(DeclaredIDList));
   new->size = 0;
@@ -64,6 +80,14 @@ DeclaredIDList* newDeclaredIDList() {
   return new;
 }
 
+/**
+ * Create declared function.
+ *
+ * @param name
+ * @param parameters
+ * @param return_type
+ * @return
+ */
 DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, char *return_type) {
   DeclaredFunction *new = (DeclaredFunction*)malloc(sizeof(DeclaredFunction));
   new->name = name;
@@ -73,6 +97,11 @@ DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *parameters, ch
   return new;
 }
 
+/**
+ * Create declared function list.
+ *
+ * @return
+ */
 DeclaredFunctionList* newDeclaredFunctionList() {
   DeclaredFunctionList *new = (DeclaredFunctionList*)malloc(sizeof(DeclaredFunctionList));
   new->size = 0;
@@ -80,6 +109,11 @@ DeclaredFunctionList* newDeclaredFunctionList() {
   return new;
 }
 
+/**
+ * Create collector.
+ *
+ * @return
+ */
 Collector* newCollector() {
   Collector *new = (Collector*)malloc(sizeof(Collector));
   new->global_vars = newDeclaredIDList();
@@ -111,11 +145,25 @@ void addDeclaredIDToList(DeclaredIDList **list, DeclaredID *decl_id) {
   (*list)->size++;
 }
 
+/**
+ * Add new declared function to list.
+ *
+ * @param list
+ * @param decl_func
+ */
 void addDeclaredFunctionToList(DeclaredFunctionList **list, DeclaredFunction *decl_func) {
   (*list)->decl_funcs[(*list)->size] = decl_func;
   (*list)->size++;
 }
 
+/**
+ * Collect global variables.
+ * If the variable is already declared, not collect it and report error.
+ *
+ * @param collector
+ * @param type
+ * @param id_list
+ */
 void collectGlobalVars(Collector **collector, UniversalType *type, IDList *id_list) {
   int i, j;
   int is_duplicate;
