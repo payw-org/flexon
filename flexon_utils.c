@@ -121,7 +121,7 @@ void collectGlobalVars(Collector **collector, UniversalType *type, IDList *id_li
   int is_duplicate;
   char *new_name, *declared_name;
 
-  for (i = 0; i < id_list->size; i++) {
+  for (i = id_list->size - 1; i >= 0; i--) {
     is_duplicate = 0;
     new_name = id_list->ids[i];
     for (j = 0; j < (*collector)->global_vars->size; j++) {
@@ -130,7 +130,7 @@ void collectGlobalVars(Collector **collector, UniversalType *type, IDList *id_li
       // already declared
       if (strcmp(new_name, declared_name) == 0) {
         is_duplicate = 1;
-        yaccError(yylineno, "Duplicate identifier \"%s\"", new_name);
+        yaccError(id_list->declared_lineno, "Duplicate identifier \"%s\"", new_name);
         break;
       }
     }

@@ -50,7 +50,10 @@ program: Mainprog ID ';' declarations subprogram_declarations compound_statement
 ;
 
 declarations: // epsilon
-| type identifier_list ';' declarations	{
+| declaration declarations
+;
+
+declaration: type identifier_list ';' {
   int i;
   if (end_of_global_decl == 0) {  // collect global variables
     collectGlobalVars(&collector, $1, $2);
@@ -64,7 +67,7 @@ declarations: // epsilon
 
 identifier_list: ID {
   // initialize
-  $$ = newIDList();
+  $$ = newIDList(yylineno);
   addIDToList(&$$, $1);
 }
 | ID ',' identifier_list  {
