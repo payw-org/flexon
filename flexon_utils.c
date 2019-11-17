@@ -19,9 +19,10 @@ void yaccError(int lineno, char *s, ...) {
   fprintf(stderr, "\n");
 }
 
-IDList* newIDList() {
+IDList* newIDList(int lineno) {
   IDList *new = (IDList*)malloc(sizeof(IDList));
   new->size = 0;
+  new->declared_lineno = lineno;
 
   return new;
 }

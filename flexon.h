@@ -31,6 +31,7 @@ typedef struct universal_type {
 typedef struct id_list {
   int size;
   char *ids[64];
+  int declared_lineno;
 } IDList;
 
 /**
@@ -72,7 +73,7 @@ typedef struct collector {
 void yyerror(const char *);
 void yaccError(int lineno, char *s, ...);
 
-IDList* newIDList();
+IDList* newIDList(int lineno);
 UniversalType* newType(char *type, int size);
 DeclaredID* newDeclaredID(char *name, UniversalType *type);
 DeclaredIDList* newDeclaredIDList();
