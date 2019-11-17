@@ -14,7 +14,7 @@ void yaccError(int lineno, char *s, ...) {
   va_list ap;
   va_start(ap, s);
 
-  fprintf(stderr, "Line (%d) Error: ", lineno);
+  fprintf(stderr, "Line(%d) Error: ", lineno);
   vfprintf(stderr, s, ap);
   fprintf(stderr, "\n");
 }
@@ -113,6 +113,31 @@ void addDeclaredIDToList(DeclaredIDList **list, DeclaredID *decl_id) {
 void addDeclaredFunctionToList(DeclaredFunctionList **list, DeclaredFunction *decl_func) {
   (*list)->decl_funcs[(*list)->size] = decl_func;
   (*list)->size++;
+}
+
+void collectGlobalVars(Collector **collector, UniversalType *type, IDList *id_list) {
+  int i, j;
+  int is_duplicate;
+  char *new_name, *declared_name;
+
+  for (i = 0; i < id_list->size; i++) {
+    is_duplicate = 0;
+    new_name = id_list->ids[i];
+    for (j = 0; j < (*collector)->global_vars->size; j++) {
+      declared_name = (*collector)->global_vars->decl_ids[j]->name;
+
+      // already declared
+      if (strcmp(new_name, declared_name) == 0) {
+        is_duplicate = 1;
+        yaccError(yylineno, "Duplicate identifier \"%s\"", new_name);
+        break;
+      }
+    }
+
+    if (!is_duplicate) {
+      addDeclaredIDToList(&((*collector)->global_vars), newDeclaredID(new_name, type));
+    }
+  }
 }
 
 /**
