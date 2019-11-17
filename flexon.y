@@ -114,7 +114,7 @@ subprogram_head: Function ID arguments ':' standard_type ';' {
 ;
 
 arguments: {
-  $$ = NULL;
+  $$ = newDeclaredIDList();
 }  // epsilon
 | '(' parameter_list ')' {
   $$ = $2;
