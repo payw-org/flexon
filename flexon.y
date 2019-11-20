@@ -264,7 +264,7 @@ int main(int argc, char **argv) {
 	end_of_global_decl = 0;
 
 	// start parsing
-	yydebug = 1;
+//	yydebug = 1;
 	yyin = file;
 	do {
 		yyparse();
