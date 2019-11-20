@@ -88,10 +88,11 @@ DeclaredIDList* newDeclaredIDList() {
  * @param return_type
  * @return
  */
-DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *arguments, char *return_type) {
+DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *arguments, DeclaredIDList *local_vars, char *return_type) {
   DeclaredFunction *new = (DeclaredFunction*)malloc(sizeof(DeclaredFunction));
   new->name = name;
   new->arguments = arguments;
+  new->local_vars = local_vars;
   new->return_type = return_type;
 
   return new;
@@ -318,7 +319,7 @@ void collectLocalVars(Collector **collector, UniversalType *type, IDList *id_lis
  * @param return_type
  * @param lineno
  */
-void collectFuncs(Collector **collector, char *name, DeclaredIDList *arguments, char *return_type, int lineno) {
+void collectFuncs(Collector **collector, char *name, char *return_type, int lineno) {
   int i;
   DeclaredFunction *declared_func;
 
@@ -337,7 +338,20 @@ void collectFuncs(Collector **collector, char *name, DeclaredIDList *arguments, 
     }
   }
 
-  addDeclaredFunctionToList(&((*collector)->funcs), newDeclaredFunction(name, arguments, return_type));
+  addDeclaredFunctionToList(
+      &((*collector)->funcs),
+      newDeclaredFunction(
+          name,
+          copyDeclaredIDList((*collector)->arguments),
+          (*collector)->local_vars,
+          return_type
+      )
+  );
+}
+
+void copyLocalVarsToCurrFunc(Collector **collector) {
+  DeclaredFunction *curr_func = (*collector)->funcs->decl_funcs[(*collector)->funcs->size - 1];
+  curr_func->local_vars = copyDeclaredIDList((*collector)->local_vars);
 }
 
 /**
@@ -553,6 +567,7 @@ void freeDeclaredFunction(DeclaredFunction *decl_func) {
 
   free(decl_func->name);
   freeDeclaredIDList(decl_func->arguments);
+  freeDeclaredIDList(decl_func->local_vars);
   free(decl_func->return_type);
   free(decl_func);
 }

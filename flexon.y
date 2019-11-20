@@ -93,7 +93,9 @@ subprogram_declarations: // epsilon
 ;
 
 subprogram_declaration: subprogram_head declarations compound_statement {
-  // initialize local id list at the end of subprogram declaration
+  // deepcopy local vars to DeclaredFunction before removed
+  copyLocalVarsToCurrFunc(&collector);
+
   // initialize arguments and local ids at the end of subprogram declaration
   freeDeclaredIDList(collector->arguments);
   freeDeclaredIDList(collector->local_vars);
