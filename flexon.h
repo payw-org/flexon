@@ -81,6 +81,10 @@ DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *arguments, cha
 DeclaredFunctionList* newDeclaredFunctionList();
 Collector* newCollector();
 
+UniversalType* copyType(UniversalType *type);
+DeclaredID* copyDeclaredID(DeclaredID *decl_id);
+DeclaredIDList* copyDeclaredIDList(DeclaredIDList *list);
+
 void addIDToList(IDList **list, char *id);
 void addDeclaredIDToList(DeclaredIDList **list, DeclaredID *decl_id);
 void addDeclaredFunctionToList(DeclaredFunctionList **list, DeclaredFunction *decl_func);

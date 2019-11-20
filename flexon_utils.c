@@ -124,6 +124,41 @@ Collector* newCollector() {
 }
 
 /**
+ * Deep copy function for UniversalType.
+ *
+ * @param type
+ * @return
+ */
+UniversalType* copyType(UniversalType *type) {
+  return newType(strdup(type->type), type->size);
+}
+
+/**
+ * Deep copy function for DeclaredID.
+ *
+ * @param decl_id
+ * @return
+ */
+DeclaredID* copyDeclaredID(DeclaredID *decl_id) {
+  return newDeclaredID(strdup(decl_id->name), copyType(decl_id->type));
+}
+
+/**
+ * Deep copy function for DeclaredIDList.
+ *
+ * @param list
+ * @return
+ */
+DeclaredIDList* copyDeclaredIDList(DeclaredIDList *list) {
+  DeclaredIDList *copy_list = newDeclaredIDList();
+  for (int i = 0; i < list->size; i++) {
+    addDeclaredIDToList(&copy_list, copyDeclaredID(list->decl_ids[i]));
+  }
+
+  return copy_list;
+}
+
+/**
  * Add new identifier to list.
  *
  * @param list
