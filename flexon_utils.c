@@ -117,6 +117,7 @@ DeclaredFunctionList* newDeclaredFunctionList() {
 Collector* newCollector() {
   Collector *new = (Collector*)malloc(sizeof(Collector));
   new->global_vars = newDeclaredIDList();
+  new->arguments = newDeclaredIDList();
   new->local_vars = newDeclaredIDList();
   new->funcs = newDeclaredFunctionList();
 
@@ -220,6 +221,39 @@ void collectGlobalVars(Collector **collector, UniversalType *type, IDList *id_li
 
     if (!is_duplicate) {
       addDeclaredIDToList(&((*collector)->global_vars), newDeclaredID(new_name, type));
+    }
+  }
+}
+
+/**
+ * Collect function arguments.
+ * If the variable is already declared, not collect it and report error.
+ * 
+ * @param collector
+ * @param type
+ * @param id_list
+ */
+void collectArguments(Collector **collector, UniversalType *type, IDList *id_list) {
+  int i, j;
+  int is_duplicate;
+  char *new_name, *declared_name;
+
+  for (i = id_list->size - 1; i >= 0; i--) {
+    is_duplicate = 0;
+    new_name = id_list->ids[i];
+    for (j = 0; j < (*collector)->arguments->size; j++) {
+      declared_name = (*collector)->arguments->decl_ids[j]->name;
+
+      // already declared
+      if (strcmp(new_name, declared_name) == 0) {
+        is_duplicate = 1;
+        yaccError(id_list->decl_lineno, "Duplicate argument name \"%s\"", new_name);
+        break;
+      }
+    }
+
+    if (!is_duplicate) {
+      addDeclaredIDToList(&((*collector)->arguments), newDeclaredID(new_name, type));
     }
   }
 }
@@ -550,6 +584,7 @@ void freeCollector(Collector *collector) {
   }
 
   freeDeclaredIDList(collector->global_vars);
+  freeDeclaredIDList(collector->arguments);
   freeDeclaredIDList(collector->local_vars);
   freeDeclaredFunctionList(collector->funcs);
   free(collector);

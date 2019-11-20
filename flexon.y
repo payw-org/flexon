@@ -39,7 +39,6 @@ int end_of_global_decl;  // flag for detecting the end of global declaration
 %type<sval> standard_type
 %type<utval> type
 %type<ilval> identifier_list
-%type<dilval> parameter_list arguments
 
 /* Indicate start state */
 %start program
@@ -95,43 +94,35 @@ subprogram_declarations: // epsilon
 
 subprogram_declaration: subprogram_head declarations compound_statement {
   // initialize local id list at the end of subprogram declaration
+  // initialize arguments and local ids at the end of subprogram declaration
+  freeDeclaredIDList(collector->arguments);
   freeDeclaredIDList(collector->local_vars);
+  collector->arguments = newDeclaredIDList();
   collector->local_vars = newDeclaredIDList();
 }
 ;
 
 subprogram_head: Function ID arguments ':' standard_type ';' {
   end_of_global_decl = 1;
-  collectFuncs(&collector, $2, $3, $5, yylineno);
+  collectFuncs(&collector, $2, $5, yylineno);
 }
 | Procedure ID arguments ';' {
   end_of_global_decl = 1;
-  collectFuncs(&collector, $2, $3, NULL, yylineno);
+  collectFuncs(&collector, $2, NULL, yylineno);
 }
 ;
 
-arguments: {
-  $$ = newDeclaredIDList();
-}  // epsilon
-| '(' parameter_list ')' {
-  $$ = $2;
-}
+arguments: // epsilon
+| '(' parameter_list ')'
 ;
 
-parameter_list: identifier_list ':' type {
-  // initialize
-  $$ = newDeclaredIDList();
-  for (int i = 0; i < $1->size; i++) {
-    addDeclaredIDToList(&$$, newDeclaredID($1->ids[i], $3));
-  }
-}
-| identifier_list ':' type ';' parameter_list {
-  $$ = $5;
-  for (int i = 0; i < $1->size; i++) {
-    addDeclaredIDToList(&$$, newDeclaredID($1->ids[i], $3));
-  }
-}
+parameter_list: parameter
+| parameter ';' parameter_list
 ;
+
+parameter: identifier_list ':' type {
+  collectArguments(&collector, $3, $1);
+}
 
 compound_statement: Begin statement_list End
 ;

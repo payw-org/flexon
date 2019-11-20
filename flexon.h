@@ -66,6 +66,7 @@ typedef struct declared_function_list {
 
 typedef struct collector {
   DeclaredIDList *global_vars;  // global variable list
+  DeclaredIDList *arguments;  // function argument list
   DeclaredIDList *local_vars; // local variable list
   DeclaredFunctionList *funcs;  // function & procedure list
 } Collector;
@@ -90,8 +91,10 @@ void addDeclaredIDToList(DeclaredIDList **list, DeclaredID *decl_id);
 void addDeclaredFunctionToList(DeclaredFunctionList **list, DeclaredFunction *decl_func);
 
 void collectGlobalVars(Collector **collector, UniversalType *type, IDList *id_list);
+void collectArguments(Collector **collector, UniversalType *type, IDList *id_list);
 void collectLocalVars(Collector **collector, UniversalType *type, IDList *id_list);
-void collectFuncs(Collector **collector, char *name, DeclaredIDList *arguments, char *return_type, int lineno);
+void collectFuncs(Collector **collector, char *name, char *return_type, int lineno);
+
 
 void printUniversalType(UniversalType *type);
 void printDeclaredID(DeclaredID *decl_id);
