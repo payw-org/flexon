@@ -54,7 +54,6 @@ declarations: // epsilon
 ;
 
 declaration: type identifier_list ';' {
-  int i;
   if (end_of_global_decl == 0) {  // collect global variables
     collectGlobalVars(&collector, $1, $2);
   } else {  // collect local variables
