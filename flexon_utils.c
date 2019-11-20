@@ -414,8 +414,9 @@ void printDeclaredIDList(DeclaredIDList *list) {
  * Ex)
  *  `<Function>
  *    name: func
- *    return type: int
  *    params: int[5] arr, float var, float[3] arr2
+ *    local variables: int[2] arr3, float var2
+ *    return type: int
  *  `
  *
  * @param type
@@ -427,9 +428,11 @@ void printDeclaredFunction(DeclaredFunction *decl_func) {
 
   printf("<Function>\n");
   printf("\tname: %s\n", decl_func->name);
-  printf("\treturn type: %s\n", decl_func->return_type);
   printf("\tparams: ");
   printDeclaredIDList(decl_func->arguments);
+  printf("\n\tlocal variables: ");
+  printDeclaredIDList(decl_func->local_vars);
+  printf("\n\treturn type: %s\n", decl_func->return_type);
   printf("\n");
 }
 
@@ -463,8 +466,6 @@ void printDeclaredFunctionList(DeclaredFunctionList *list) {
  * Ex)
  *  `<Global variables>
  *    int[5] arr, float var, float[3] arr2
- *  <Local variables>
- *    int[3] arr3, float var2, float[2] arr4
  *  <Function>
  *    name: func
  *    return type: int
@@ -486,11 +487,7 @@ void printCollector(Collector *collector) {
   printf("<Global variables>\n");
   printf("\t");
   printDeclaredIDList(collector->global_vars);
-  printf("\n");
-  printf("<Local variables>\n");
-  printf("\t");
-  printDeclaredIDList(collector->local_vars);
-  printf("\n");
+  printf("\n\n");
   printDeclaredFunctionList(collector->funcs);
 }
 
