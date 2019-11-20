@@ -189,6 +189,15 @@ void collectGlobalVars(Collector **collector, UniversalType *type, IDList *id_li
   }
 }
 
+/**
+ * Collect local variables.
+ * If the variable is already declared, not collect it and report error.
+ * Duplicate check on the function arguments and previous declared local variables.
+ *
+ * @param collector
+ * @param type
+ * @param id_list
+ */
 void collectLocalVars(Collector **collector, UniversalType *type, IDList *id_list) {
   int i, j;
   int is_duplicate;
@@ -231,12 +240,23 @@ void collectLocalVars(Collector **collector, UniversalType *type, IDList *id_lis
   }
 }
 
+/**
+ * Collect function and procedures.
+ *
+ * @param collector
+ * @param name
+ * @param arguments
+ * @param return_type
+ * @param lineno
+ */
 void collectFuncs(Collector **collector, char *name, DeclaredIDList *arguments, char *return_type, int lineno) {
   int i;
   DeclaredFunction *declared_func;
 
   for (i = 0; i < (*collector)->funcs->size; i++) {
     declared_func = (*collector)->funcs->decl_funcs[i];
+
+    // already declared
     if (strcmp(name, declared_func->name) == 0) {
       yaccError(lineno, "Duplicate function name \"%s\"", name);
       return;
