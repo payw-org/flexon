@@ -258,7 +258,12 @@ void collectFuncs(Collector **collector, char *name, DeclaredIDList *arguments, 
 
     // already declared
     if (strcmp(name, declared_func->name) == 0) {
-      yaccError(lineno, "Duplicate function name \"%s\"", name);
+      if (return_type == NULL) {  // procedure
+        yaccError(lineno, "Duplicate procedure name \"%s\"", name);
+      } else {  // function
+        yaccError(lineno, "Duplicate function name \"%s\"", name);
+      }
+
       return;
     }
   }
