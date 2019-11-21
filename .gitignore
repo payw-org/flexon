@@ -1,6 +1,8 @@
 .idea
+cmake-build-debug
 
 flexon.tab.*
 flexon.lex.*
+flexon_utils.o
 flexon.output
 flexon
