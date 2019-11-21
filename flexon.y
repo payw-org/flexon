@@ -74,7 +74,7 @@ identifier_list: ID {
 ;
 
 type: standard_type  {
-  $$ = newType($1, 0);
+  $$ = newType($1, -1);
 }
 | standard_type '[' Integer ']'	{
   $$ = newType($1, $3);
