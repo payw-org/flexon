@@ -3,6 +3,7 @@
 
 Collector *collector;	// collector for the program's all identifiers
 int end_of_global_decl;  // flag for detecting the end of global declaration
+int end_of_local_stmt; // flag for detecting the end of local statements
 %}
 
 %union {
@@ -101,15 +102,20 @@ subprogram_declaration: subprogram_head declarations compound_statement {
   freeDeclaredIDList(collector->local_vars);
   collector->arguments = newDeclaredIDList();
   collector->local_vars = newDeclaredIDList();
+
+  // temporarily set flag which indicate end of local statement
+  end_of_local_stmt = 1;
 }
 ;
 
 subprogram_head: Function ID arguments ':' standard_type ';' {
   end_of_global_decl = 1;
+  end_of_local_stmt = 0;
   collectFuncs(&collector, $2, $5, yylineno);
 }
 | Procedure ID arguments ';' {
   end_of_global_decl = 1;
+  end_of_local_stmt = 0;
   collectFuncs(&collector, $2, NULL, yylineno);
 }
 ;
@@ -254,6 +260,7 @@ int main(int argc, char **argv) {
 	// initialize global variables
 	collector = newCollector();
 	end_of_global_decl = 0;
+	end_of_local_stmt = 0;
 
 	// start parsing
 //	yydebug = 1;

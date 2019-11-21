@@ -229,7 +229,7 @@ void collectGlobalVars(Collector **collector, UniversalType *type, IDList *id_li
 /**
  * Collect function arguments.
  * If the variable is already declared, not collect it and report error.
- * 
+ *
  * @param collector
  * @param type
  * @param id_list
