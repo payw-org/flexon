@@ -2,8 +2,8 @@
 #include "flexon.h"
 
 Collector *collector;	// collector for the program's all identifiers
-int end_of_global_decl;  // flag for detecting the end of global declaration
-int end_of_local_stmt; // flag for detecting the end of local statements
+int is_global_decl_scope;  // flag for indicating global declaration scope
+int is_global_stmt_scope; // flag for indicating global statement scope
 %}
 
 %union {
@@ -54,7 +54,7 @@ declarations: // epsilon
 ;
 
 declaration: type identifier_list ';' {
-  if (end_of_global_decl == 0) {  // collect global variables
+  if (is_global_decl_scope) {  // collect global variables
     collectGlobalVars(&collector, $1, $2);
   } else {  // collect local variables
     collectLocalVars(&collector, $1, $2);
@@ -103,19 +103,19 @@ subprogram_declaration: subprogram_head declarations compound_statement {
   collector->arguments = newDeclaredIDList();
   collector->local_vars = newDeclaredIDList();
 
-  // temporarily set flag which indicate end of local statement
-  end_of_local_stmt = 1;
+  // temporarily set flag which indicate global statements scope
+  is_global_stmt_scope = 1;
 }
 ;
 
 subprogram_head: Function ID arguments ':' standard_type ';' {
-  end_of_global_decl = 1;
-  end_of_local_stmt = 0;
+  is_global_decl_scope = 0;
+  is_global_stmt_scope = 0;
   collectFuncs(&collector, $2, $5, yylineno);
 }
 | Procedure ID arguments ';' {
-  end_of_global_decl = 1;
-  end_of_local_stmt = 0;
+  is_global_decl_scope = 0;
+  is_global_stmt_scope = 0;
   collectFuncs(&collector, $2, NULL, yylineno);
 }
 ;
@@ -259,8 +259,8 @@ int main(int argc, char **argv) {
 
 	// initialize global variables
 	collector = newCollector();
-	end_of_global_decl = 0;
-	end_of_local_stmt = 0;
+	is_global_decl_scope = 1;
+	is_global_stmt_scope = 1;
 
 	// start parsing
 //	yydebug = 1;
