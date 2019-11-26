@@ -173,8 +173,22 @@ print_statement: Print
 | Print '(' expression ')'
 ;
 
-variable: ID
-| ID '[' expression ']'
+variable: ID {
+  DeclaredID *decl_id;
+  if (is_global_stmt_scope) { // global scope
+    decl_id = checkIDInGlobalStmt(collector, $1, 0, yylineno);
+  } else { // local scope
+    decl_id = checkIDInLocalStmt(collector, $1, 0, yylineno);
+  }
+}
+| ID '[' expression ']' {
+  DeclaredID *decl_id;
+  if (is_global_stmt_scope) { // global scope
+    decl_id = checkIDInGlobalStmt(collector, $1, 1, yylineno);
+  } else { // local scope
+    decl_id = checkIDInLocalStmt(collector, $1, 1, yylineno);
+  }
+}
 ;
 
 procedure_statement: ID '(' actual_parameter_expression ')'
