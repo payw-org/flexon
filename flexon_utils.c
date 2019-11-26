@@ -19,7 +19,7 @@ void yaccError(int lineno, char *s, ...) {
   va_list ap;
   va_start(ap, s);
 
-  fprintf(stderr, "Line[%d] Error: ", lineno);
+  fprintf(stderr, "Error at Line(%d): ", lineno);
   vfprintf(stderr, s, ap);
   fprintf(stderr, "\n");
 }
