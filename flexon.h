@@ -98,6 +98,10 @@ void collectFuncs(Collector **collector, char *name, char *return_type, int line
 
 void copyLocalVarsToCurrFunc(Collector **collector);
 
+DeclaredID* checkIDInGlobalStmt(Collector *collector, char *id, int is_array, int lineno);
+DeclaredID* checkIDInLocalStmt(Collector *collector, char *id, int is_array, int lineno);
+int isCompatible(DeclaredID *decl_id, int is_array, int lineno);
+
 void printUniversalType(UniversalType *type);
 void printDeclaredID(DeclaredID *decl_id);
 void printDeclaredIDList(DeclaredIDList *list);

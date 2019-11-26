@@ -355,6 +355,110 @@ void copyLocalVarsToCurrFunc(Collector **collector) {
 }
 
 /**
+ * Check whether if ids in the global statement are declared
+ *
+ * @param collector
+ * @param id
+ * @param is_array
+ * @param lineno
+ * @return
+ */
+DeclaredID* checkIDInGlobalStmt(Collector *collector, char *id, int is_array, int lineno) {
+  DeclaredID *decl_id;
+
+  for (int i = 0; i < collector->global_vars->size; i++) {
+    decl_id = collector->global_vars->decl_ids[i];
+    if (strcmp(id, decl_id->name) == 0) { // same name
+      if (isCompatible(decl_id, is_array, lineno)) {
+        return decl_id;
+      } else {
+        return NULL;
+      }
+    }
+  }
+
+  yaccError(lineno, "Undeclared variable \"%s\"", id);
+  return NULL;
+}
+
+/**
+ * Check whether if ids in the local statement are declared
+ *
+ * @param collector
+ * @param id
+ * @param is_array
+ * @param lineno
+ * @return
+ */
+DeclaredID* checkIDInLocalStmt(Collector *collector, char *id, int is_array, int lineno) {
+  DeclaredFunction *curr_func;
+  curr_func = collector->funcs->decl_funcs[collector->funcs->size - 1];
+
+  int i;
+  DeclaredID *decl_id;
+
+  // check in the current function's arguments
+  for (i = 0; i < curr_func->arguments->size; i++) {
+    decl_id = collector->arguments->decl_ids[i];
+    if (strcmp(id, decl_id->name) == 0) { // same name
+      if (isCompatible(decl_id, is_array, lineno)) {
+        return decl_id;
+      } else {
+        return NULL;
+      }
+    }
+  }
+
+  // check in the current function's local variables
+  for (i = 0; i < curr_func->local_vars->size; i++) {
+    decl_id = collector->local_vars->decl_ids[i];
+    if (strcmp(id, decl_id->name) == 0) { // same name
+      if (isCompatible(decl_id, is_array, lineno)) {
+        return decl_id;
+      } else {
+        return NULL;
+      }
+    }
+  }
+
+  // check in the global variables
+  for (i = 0; i < collector->global_vars->size; i++) {
+    decl_id = collector->global_vars->decl_ids[i];
+    if (strcmp(id, decl_id->name) == 0) { // same name
+      if (isCompatible(decl_id, is_array, lineno)) {
+        return decl_id;
+      } else {
+        return NULL;
+      }
+    }
+  }
+
+  yaccError(lineno, "Undeclared variable \"%s\"", id);
+  return NULL;
+}
+
+/**
+ * Check whether if type is compatible.
+ * It only checks compatibility of array and non-array value.
+ *
+ * @param decl_id
+ * @param is_array
+ * @param lineno
+ * @return
+ */
+int isCompatible(DeclaredID *decl_id, int is_array, int lineno) {
+  if (is_array && decl_id->type->size < 0) {
+    yaccError(lineno, "Incompatible usage \"%s\" which is declared as non-array", decl_id->name);
+    return 0;
+  } else if (!is_array && decl_id->type->size >= 0) {
+    yaccError(lineno, "Incompatible usage \"%s\" is declared as array", decl_id->name);
+    return 0;
+  }
+
+  return 1;
+}
+
+/**
  * Print this type to standard output.
  * Ex)
  *  `int[5]`
