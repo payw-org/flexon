@@ -26,6 +26,14 @@ typedef struct universal_type {
 } UniversalType;
 
 /**
+ * Struct for the universal type list
+ */
+typedef struct universal_type_list {
+  int size;
+  UniversalType *types[128];
+} UniversalTypeList;
+
+/**
  * Struct for the non-terminal `identifier_list`
  */
 typedef struct id_list {
@@ -77,6 +85,7 @@ void yaccError(int lineno, char *s, ...);
 
 IDList* newIDList(int lineno);
 UniversalType* newType(char *type, int size);
+UniversalTypeList* newTypeList();
 DeclaredID* newDeclaredID(char *name, UniversalType *type);
 DeclaredIDList* newDeclaredIDList();
 DeclaredFunction* newDeclaredFunction(char *name, DeclaredIDList *arguments, DeclaredIDList *local_vars, char *return_type);
@@ -87,6 +96,7 @@ UniversalType* copyType(UniversalType *type);
 DeclaredID* copyDeclaredID(DeclaredID *decl_id);
 DeclaredIDList* copyDeclaredIDList(DeclaredIDList *list);
 
+void addTypeToList(UniversalTypeList **list, UniversalType *type);
 void addIDToList(IDList **list, char *id);
 void addDeclaredIDToList(DeclaredIDList **list, DeclaredID *decl_id);
 void addDeclaredFunctionToList(DeclaredFunctionList **list, DeclaredFunction *decl_func);
@@ -97,7 +107,9 @@ void collectLocalVars(Collector **collector, UniversalType *type, IDList *id_lis
 void collectFuncs(Collector **collector, char *name, char *return_type, int lineno);
 
 void copyLocalVarsToCurrFunc(Collector **collector);
+UniversalType* incompatibleArrayUsageError(UniversalType *type, int lineno);
 
+DeclaredFunction* checkFunc(Collector *collector, char *id, UniversalTypeList *param_type_list, int lineno);
 DeclaredID* checkIDInGlobalStmt(Collector *collector, char *id, int is_array, int lineno);
 DeclaredID* checkIDInLocalStmt(Collector *collector, char *id, int is_array, int lineno);
 int isCompatible(DeclaredID *decl_id, int is_array, int lineno);
