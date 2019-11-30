@@ -211,8 +211,12 @@ expression_list: expression
 | expression ',' expression_list
 ;
 
-expression: simple_expression %prec FAKE_NO_RELOP
-| simple_expression relop simple_expression
+expression: simple_expression %prec FAKE_NO_RELOP {
+  $$ = $1;
+}
+| simple_expression relop simple_expression {
+  $$ = newType("int", -1);
+}
 ;
 
 simple_expression: term {
