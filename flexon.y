@@ -4,6 +4,7 @@
 Collector *collector;	// collector for the program's all identifiers
 int is_global_decl_scope;  // flag for indicating global declaration scope
 int is_global_stmt_scope; // flag for indicating global statement scope
+int is_returned; // flag for checking whether if function is returned
 %}
 
 %union {
@@ -11,8 +12,11 @@ int is_global_stmt_scope; // flag for indicating global statement scope
   float fval;
   char *sval;
   UniversalType *utval;
+  UniversalTypeList *utlval;
   IDList *ilval;
+  DeclaredID *dival;
   DeclaredIDList *dilval;
+  DeclaredFunction *dfval;
 }
 
 /* declare tokens */
@@ -38,8 +42,11 @@ int is_global_stmt_scope; // flag for indicating global statement scope
 %type<sval> '+' '-' '*' '/'
 %type<sval> sign relop addop multop
 %type<sval> standard_type
-%type<utval> type
+%type<utval> type factor term expression simple_expression
+%type<utlval> expression_list actual_parameter_expression
 %type<ilval> identifier_list
+%type<dival> variable
+%type<dfval> procedure_statement
 
 /* Indicate start state */
 %start program
@@ -180,6 +187,8 @@ variable: ID {
   } else { // local scope
     decl_id = checkIDInLocalStmt(collector, $1, 0, yylineno);
   }
+
+  $$ = decl_id;
 }
 | ID '[' expression ']' {
   DeclaredID *decl_id;
@@ -275,6 +284,7 @@ int main(int argc, char **argv) {
 	collector = newCollector();
 	is_global_decl_scope = 1;
 	is_global_stmt_scope = 1;
+	is_returned = 0;
 
 	// start parsing
 //	yydebug = 1;
