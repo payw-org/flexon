@@ -101,7 +101,17 @@ subprogram_declarations: // epsilon
 ;
 
 subprogram_declaration: subprogram_head declarations compound_statement {
-  // deepcopy local vars to DeclaredFunction before removed
+  // check if whether function is returned
+  DeclaredFunction *curr_func;
+  curr_func = collector->funcs->decl_funcs[collector->funcs->size - 1];
+  if (curr_func->return_type != NULL) {
+    if (!is_returned) {
+      yaccError(yylineno, "Function \"%s\" should be returned", curr_func->name);
+    }
+  }
+  is_returned = 0;
+
+  // deep copy local vars to DeclaredFunction before removed
   copyLocalVarsToCurrFunc(&collector);
 
   // initialize arguments and local ids at the end of subprogram declaration
@@ -161,7 +171,24 @@ statement: variable '=' expression {
 | if_statement
 | while_statement
 | for_statement
-| Return expression
+| Return expression {
+  if (is_global_stmt_scope) {
+    yaccError(yylineno, "Mainprog cannot have return value");
+  } else {
+    is_returned = 1;
+
+    DeclaredFunction *curr_func;
+    curr_func = collector->funcs->decl_funcs[collector->funcs->size - 1];
+
+    if (curr_func->return_type == NULL) {
+      yaccError(yylineno, "Procedure \"%s\" cannot have return value", curr_func->name);
+    } else {
+      if ($2->size >= 0) {
+        yaccError(yylineno, "Function \"%s\" cannot have array type(%s[%d]) return value", curr_func->name, $2->type, $2->size);
+      }
+    }
+  }
+}
 | Nop
 ;
 
