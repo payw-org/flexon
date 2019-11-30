@@ -1,16 +1,21 @@
 mainprog test;
 int count, credit, length;
-float[5] weight, temperature;
-  function sum(foo, bar: int[5]; baz: float): int;
+float[2] weight, memory;
+
+  function sum(foo, bar: int[5]): int;  // function for sum up two values
+  float count, baz, boring;
+
   begin
-  nop
+    credit[3] = 3
+    // return count + credit * weight[1]
   end
 
-  procedure hello;
-  float name;
+  procedure good;
+  int memory, baz;
+
   begin
-  nop
+    nop
   end
 begin
-nop
+  good()
 end
