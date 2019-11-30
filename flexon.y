@@ -215,8 +215,31 @@ expression: simple_expression %prec FAKE_NO_RELOP
 | simple_expression relop simple_expression
 ;
 
-simple_expression: term
-| term addop simple_expression
+simple_expression: term {
+  $$ = $1;
+}
+| term addop simple_expression {
+  if ($1 == NULL && $3 == NULL) {
+    $$ = NULL;
+  } else if ($1 != NULL && $3 == NULL) {
+    $$ = incompatibleArrayUsageError($1, yylineno);
+  } else if ($1 == NULL && $3 != NULL) {
+    $$ = incompatibleArrayUsageError($3, yylineno);
+  } else {
+    if (
+      incompatibleArrayUsageError($1, yylineno) == NULL ||
+      incompatibleArrayUsageError($3, yylineno) == NULL
+    ) {
+      $$ = NULL;
+    } else {
+      if (strcmp($1->type, "int") == 0 && strcmp($3->type, "int") == 0) {
+        $$ = newType("int", -1);
+      } else {
+        $$ = newType("float", -1);
+      }
+    }
+  }
+}
 ;
 
 term: factor {
