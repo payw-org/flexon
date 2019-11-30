@@ -197,6 +197,21 @@ variable: ID {
   } else { // local scope
     decl_id = checkIDInLocalStmt(collector, $1, 1, yylineno);
   }
+
+  if (decl_id == NULL) {
+    $$ = NULL;
+  } else {
+    if ($3 == NULL) {
+      $$ = NULL;
+    } else if (strcmp($3->type, "int") != 0 || $3->size >= 0) {
+      yaccError(yylineno, "Array \"%s\" subscript is not integer", $1);
+      $$ = NULL;
+    } else {
+      decl_id = copyDeclaredID(decl_id);
+      decl_id->type->size = -1;
+      $$ = decl_id;
+    }
+  }
 }
 ;
 
