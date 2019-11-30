@@ -207,8 +207,15 @@ actual_parameter_expression: // epsilon
 | expression_list
 ;
 
-expression_list: expression
-| expression ',' expression_list
+expression_list: expression {
+  // initialize
+  $$ = newTypeList();
+  addTypeToList(&$$, $1);
+}
+| expression ',' expression_list {
+  addTypeToList(&$3, $1);
+  $$ = $3;
+}
 ;
 
 expression: simple_expression %prec FAKE_NO_RELOP {
