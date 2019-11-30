@@ -219,8 +219,31 @@ simple_expression: term
 | term addop simple_expression
 ;
 
-term: factor
-| factor multop term
+term: factor {
+  $$ = $1;
+}
+| factor multop term {
+  if ($1 == NULL && $3 == NULL) {
+    $$ = NULL;
+  } else if ($1 != NULL && $3 == NULL) {
+    $$ = incompatibleArrayUsageError($1, yylineno);
+  } else if ($1 == NULL && $3 != NULL) {
+    $$ = incompatibleArrayUsageError($3, yylineno);
+  } else {
+    if (
+      incompatibleArrayUsageError($1, yylineno) == NULL ||
+      incompatibleArrayUsageError($3, yylineno) == NULL
+    ) {
+      $$ = NULL;
+    } else {
+      if (strcmp($1->type, "int") == 0 && strcmp($3->type, "int") == 0) {
+        $$ = newType("int", -1);
+      } else {
+        $$ = newType("float", -1);
+      }
+    }
+  }
+}
 ;
 
 factor: Integer {
