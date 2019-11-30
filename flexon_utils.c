@@ -54,6 +54,18 @@ UniversalType* newType(char *type, int size) {
 }
 
 /**
+ * Create universal type list.
+ *
+ * @return
+ */
+UniversalTypeList* newTypeList() {
+  UniversalTypeList *new = (UniversalTypeList*)malloc(sizeof(UniversalTypeList));
+  new->size = 0;
+
+  return new;
+}
+
+/**
  * Create the new declared id.
  *
  * @param name
@@ -158,6 +170,17 @@ DeclaredIDList* copyDeclaredIDList(DeclaredIDList *list) {
   }
 
   return copy_list;
+}
+
+/**
+ * Add new universal type to list.
+ *
+ * @param list
+ * @param type
+ */
+void addTypeToList(UniversalTypeList **list, UniversalType *type) {
+  (*list)->types[(*list)->size] = type;
+  (*list)->size++;
 }
 
 /**
@@ -354,6 +377,71 @@ void copyLocalVarsToCurrFunc(Collector **collector) {
   curr_func->local_vars = copyDeclaredIDList((*collector)->local_vars);
 }
 
+UniversalType* incompatibleArrayUsageError(UniversalType *type, int lineno) {
+  if (type->size == -1) {
+    return type;
+  } else {
+    yaccError(lineno, "Incompatible usage variable which is declared as array");
+    return NULL;
+  }
+}
+
+DeclaredFunction* checkFunc(Collector *collector, char *id, UniversalTypeList *param_type_list, int lineno) {
+  DeclaredFunction *decl_func;
+
+  for (int i = 0; i < collector->funcs->size; i++) {
+    decl_func = collector->funcs->decl_funcs[i];
+    if (strcmp(id, decl_func->name) == 0) { // same name
+      // check the compatibility of parameters
+      if (decl_func->arguments->size > param_type_list->size) {
+        yaccError(yylineno, "Too few arguments to procedure \"%s\"", id);
+        return NULL;
+      } else if (decl_func->arguments->size < param_type_list->size) {
+        yaccError(yylineno, "Too many arguments to procedure \"%s\"", id);
+        return NULL;
+      } else {
+        for (int j = 0; j < decl_func->arguments->size; j++) {
+          UniversalType *argumentType = decl_func->arguments->decl_ids[j]->type;
+          UniversalType *parameterType = param_type_list->types[j];
+
+          if (argumentType->size >= 0 && parameterType->size >= 0) {
+            if (argumentType->size != parameterType->size) {
+              yaccError(
+                  yylineno,
+                  "Incompatible argument pass at \"%s\" of procedure \"%s\" (Invalid argument array size)",
+                  decl_func->arguments->decl_ids[j]->name,
+                  id
+              );
+              return NULL;
+            }
+          } else if (argumentType->size >= 0 && parameterType->size == -1) {
+            yaccError(
+                yylineno,
+                "Incompatible argument pass at \"%s\" of procedure \"%s\" (You should pass array)",
+                decl_func->arguments->decl_ids[j]->name,
+                id
+            );
+            return NULL;
+          } else if (argumentType->size == -1 && parameterType->size >= 0) {
+            yaccError(
+                yylineno,
+                "Incompatible argument pass at \"%s\" of procedure \"%s\" (You should pass non-array)",
+                decl_func->arguments->decl_ids[j]->name,
+                id
+            );
+            return NULL;
+          }
+        }
+      }
+
+      return decl_func;
+    }
+  }
+
+  yaccError(lineno, "Undeclared function or procedure \"%s\"", id);
+  return NULL;
+}
+
 /**
  * Check whether if ids in the global statement are declared
  *
@@ -450,10 +538,11 @@ int isCompatible(DeclaredID *decl_id, int is_array, int lineno) {
   if (is_array && decl_id->type->size < 0) {
     yaccError(lineno, "Incompatible usage \"%s\" which is declared as non-array", decl_id->name);
     return 0;
-  } else if (!is_array && decl_id->type->size >= 0) {
-    yaccError(lineno, "Incompatible usage \"%s\" is declared as array", decl_id->name);
-    return 0;
   }
+//  else if (!is_array && decl_id->type->size >= 0) {
+//    yaccError(lineno, "Incompatible usage \"%s\" is declared as array", decl_id->name);
+//    return 0;
+//  }
 
   return 1;
 }
