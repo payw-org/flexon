@@ -200,7 +200,12 @@ variable: ID {
 }
 ;
 
-procedure_statement: ID '(' actual_parameter_expression ')'
+procedure_statement: ID '(' actual_parameter_expression ')' {
+  DeclaredFunction *decl_func;
+  decl_func = checkFunc(collector, $1, $3, yylineno);
+
+  $$ = decl_func;
+}
 ;
 
 actual_parameter_expression: {	// epslion
