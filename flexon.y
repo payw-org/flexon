@@ -203,8 +203,12 @@ variable: ID {
 procedure_statement: ID '(' actual_parameter_expression ')'
 ;
 
-actual_parameter_expression: // epsilon
-| expression_list
+actual_parameter_expression: {	// epslion
+  $$ = newTypeList();
+}
+| expression_list {
+  $$ = $1;
+}
 ;
 
 expression_list: expression {
