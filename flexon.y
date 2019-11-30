@@ -2,7 +2,9 @@
 #include "flexon.h"
 
 Collector *collector;	// collector for the program's all identifiers
-int end_of_global_decl;  // flag for detecting the end of global declaration
+int is_global_decl_scope;  // flag for indicating global declaration scope
+int is_global_stmt_scope; // flag for indicating global statement scope
+int is_returned; // flag for checking whether if function is returned
 %}
 
 %union {
@@ -10,8 +12,11 @@ int end_of_global_decl;  // flag for detecting the end of global declaration
   float fval;
   char *sval;
   UniversalType *utval;
+  UniversalTypeList *utlval;
   IDList *ilval;
+  DeclaredID *dival;
   DeclaredIDList *dilval;
+  DeclaredFunction *dfval;
 }
 
 /* declare tokens */
@@ -37,8 +42,11 @@ int end_of_global_decl;  // flag for detecting the end of global declaration
 %type<sval> '+' '-' '*' '/'
 %type<sval> sign relop addop multop
 %type<sval> standard_type
-%type<utval> type
+%type<utval> type factor term expression simple_expression
+%type<utlval> expression_list actual_parameter_expression
 %type<ilval> identifier_list
+%type<dival> variable
+%type<dfval> procedure_statement
 
 /* Indicate start state */
 %start program
@@ -53,7 +61,7 @@ declarations: // epsilon
 ;
 
 declaration: type identifier_list ';' {
-  if (end_of_global_decl == 0) {  // collect global variables
+  if (is_global_decl_scope) {  // collect global variables
     collectGlobalVars(&collector, $1, $2);
   } else {  // collect local variables
     collectLocalVars(&collector, $1, $2);
@@ -73,7 +81,7 @@ identifier_list: ID {
 ;
 
 type: standard_type  {
-  $$ = newType($1, 0);
+  $$ = newType($1, -1);
 }
 | standard_type '[' Integer ']'	{
   $$ = newType($1, $3);
@@ -93,7 +101,17 @@ subprogram_declarations: // epsilon
 ;
 
 subprogram_declaration: subprogram_head declarations compound_statement {
-  // deepcopy local vars to DeclaredFunction before removed
+  // check if whether function is returned
+  DeclaredFunction *curr_func;
+  curr_func = collector->funcs->decl_funcs[collector->funcs->size - 1];
+  if (curr_func->return_type != NULL) {
+    if (!is_returned) {
+      yaccError(yylineno, "Function \"%s\" should be returned", curr_func->name);
+    }
+  }
+  is_returned = 0;
+
+  // deep copy local vars to DeclaredFunction before removed
   copyLocalVarsToCurrFunc(&collector);
 
   // initialize arguments and local ids at the end of subprogram declaration
@@ -101,15 +119,20 @@ subprogram_declaration: subprogram_head declarations compound_statement {
   freeDeclaredIDList(collector->local_vars);
   collector->arguments = newDeclaredIDList();
   collector->local_vars = newDeclaredIDList();
+
+  // temporarily set flag which indicate global statements scope
+  is_global_stmt_scope = 1;
 }
 ;
 
 subprogram_head: Function ID arguments ':' standard_type ';' {
-  end_of_global_decl = 1;
+  is_global_decl_scope = 0;
+  is_global_stmt_scope = 0;
   collectFuncs(&collector, $2, $5, yylineno);
 }
 | Procedure ID arguments ';' {
-  end_of_global_decl = 1;
+  is_global_decl_scope = 0;
+  is_global_stmt_scope = 0;
   collectFuncs(&collector, $2, NULL, yylineno);
 }
 ;
@@ -133,14 +156,39 @@ statement_list: statement
 | statement ';' statement_list
 ;
 
-statement: variable '=' expression
+statement: variable '=' expression {
+  if ($1 != NULL && $3 != NULL) {
+    if ($1->type->size == -1 && $3->size >= 0) {
+      yaccError(yylineno, "Array is not assignable to non-array variable \"%s\"", $1->name);
+    } else if ($1->type->size >= 0) {
+      yaccError(yylineno, "Array type \"%s\"(%s[%d]) is not assignable", $1->name, $1->type->type, $1->type->size);
+    }
+  }
+}
 | print_statement
 | procedure_statement
 | compound_statement
 | if_statement
 | while_statement
 | for_statement
-| Return expression
+| Return expression {
+  if (is_global_stmt_scope) {
+    yaccError(yylineno, "Mainprog cannot have return value");
+  } else {
+    is_returned = 1;
+
+    DeclaredFunction *curr_func;
+    curr_func = collector->funcs->decl_funcs[collector->funcs->size - 1];
+
+    if (curr_func->return_type == NULL) {
+      yaccError(yylineno, "Procedure \"%s\" cannot have return value", curr_func->name);
+    } else {
+      if ($2->size >= 0) {
+        yaccError(yylineno, "Function \"%s\" cannot have array type(%s[%d]) return value", curr_func->name, $2->type, $2->size);
+      }
+    }
+  }
+}
 | Nop
 ;
 
@@ -167,39 +215,163 @@ print_statement: Print
 | Print '(' expression ')'
 ;
 
-variable: ID
-| ID '[' expression ']'
+variable: ID {
+  DeclaredID *decl_id;
+  if (is_global_stmt_scope) { // global scope
+    decl_id = checkIDInGlobalStmt(collector, $1, 0, yylineno);
+  } else { // local scope
+    decl_id = checkIDInLocalStmt(collector, $1, 0, yylineno);
+  }
+
+  $$ = decl_id;
+}
+| ID '[' expression ']' {
+  DeclaredID *decl_id;
+  if (is_global_stmt_scope) { // global scope
+    decl_id = checkIDInGlobalStmt(collector, $1, 1, yylineno);
+  } else { // local scope
+    decl_id = checkIDInLocalStmt(collector, $1, 1, yylineno);
+  }
+
+  if (decl_id == NULL) {
+    $$ = NULL;
+  } else {
+    if ($3 == NULL) {
+      $$ = NULL;
+    } else if (strcmp($3->type, "int") != 0 || $3->size >= 0) {
+      yaccError(yylineno, "Array \"%s\" subscript is not integer", $1);
+      $$ = NULL;
+    } else {
+      decl_id = copyDeclaredID(decl_id);
+      decl_id->type->size = -1;
+      $$ = decl_id;
+    }
+  }
+}
 ;
 
-procedure_statement: ID '(' actual_parameter_expression ')'
+procedure_statement: ID '(' actual_parameter_expression ')' {
+  DeclaredFunction *decl_func;
+  decl_func = checkFunc(collector, $1, $3, yylineno);
+
+  $$ = decl_func;
+}
 ;
 
-actual_parameter_expression: // epsilon
-| expression_list
+actual_parameter_expression: {	// epslion
+  $$ = newTypeList();
+}
+| expression_list {
+  $$ = $1;
+}
 ;
 
-expression_list: expression
-| expression ',' expression_list
+expression_list: expression {
+  // initialize
+  $$ = newTypeList();
+  addTypeToList(&$$, $1);
+}
+| expression ',' expression_list {
+  addTypeToList(&$3, $1);
+  $$ = $3;
+}
 ;
 
-expression: simple_expression %prec FAKE_NO_RELOP
-| simple_expression relop simple_expression
+expression: simple_expression %prec FAKE_NO_RELOP {
+  $$ = $1;
+}
+| simple_expression relop simple_expression {
+  $$ = newType("int", -1);
+}
 ;
 
-simple_expression: term
-| term addop simple_expression
+simple_expression: term {
+  $$ = $1;
+}
+| term addop simple_expression {
+  if ($1 == NULL && $3 == NULL) {
+    $$ = NULL;
+  } else if ($1 != NULL && $3 == NULL) {
+    $$ = incompatibleArrayUsageError($1, yylineno);
+  } else if ($1 == NULL && $3 != NULL) {
+    $$ = incompatibleArrayUsageError($3, yylineno);
+  } else {
+    if (
+      incompatibleArrayUsageError($1, yylineno) == NULL ||
+      incompatibleArrayUsageError($3, yylineno) == NULL
+    ) {
+      $$ = NULL;
+    } else {
+      if (strcmp($1->type, "int") == 0 && strcmp($3->type, "int") == 0) {
+        $$ = newType("int", -1);
+      } else {
+        $$ = newType("float", -1);
+      }
+    }
+  }
+}
 ;
 
-term: factor
-| factor multop term
+term: factor {
+  $$ = $1;
+}
+| factor multop term {
+  if ($1 == NULL && $3 == NULL) {
+    $$ = NULL;
+  } else if ($1 != NULL && $3 == NULL) {
+    $$ = incompatibleArrayUsageError($1, yylineno);
+  } else if ($1 == NULL && $3 != NULL) {
+    $$ = incompatibleArrayUsageError($3, yylineno);
+  } else {
+    if (
+      incompatibleArrayUsageError($1, yylineno) == NULL ||
+      incompatibleArrayUsageError($3, yylineno) == NULL
+    ) {
+      $$ = NULL;
+    } else {
+      if (strcmp($1->type, "int") == 0 && strcmp($3->type, "int") == 0) {
+        $$ = newType("int", -1);
+      } else {
+        $$ = newType("float", -1);
+      }
+    }
+  }
+}
 ;
 
-factor: Integer
-| Float
-| variable
-| procedure_statement
-| '!' factor
-| sign factor
+factor: Integer {
+  $$ = newType("int", -1);
+}
+| Float {
+  $$ = newType("float", -1);
+}
+| variable {
+  if ($1 == NULL) {
+    $$ = NULL;
+  } else {
+    $$ = $1->type;
+  }
+}
+| procedure_statement {
+  if ($1 == NULL) {
+    $$ = NULL;
+  } else if ($1->return_type == NULL) {
+    yaccError(yylineno, "Procedure \"%s\" not have return value (incompatible usage)", $1->name);
+    $$ = NULL;
+  } else {
+    $$ = newType($1->return_type, -1);
+  }
+}
+| '!' factor {
+  $$ = newType("int", -1);
+}
+| sign factor {
+  if ($2 == NULL) {
+    $$ = NULL;
+  } else {
+    $$ = incompatibleArrayUsageError($2, yylineno);
+  }
+}
 ;
 
 sign: '+' {
@@ -253,7 +425,9 @@ int main(int argc, char **argv) {
 
 	// initialize global variables
 	collector = newCollector();
-	end_of_global_decl = 0;
+	is_global_decl_scope = 1;
+	is_global_stmt_scope = 1;
+	is_returned = 0;
 
 	// start parsing
 //	yydebug = 1;
