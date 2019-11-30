@@ -223,12 +223,39 @@ term: factor
 | factor multop term
 ;
 
-factor: Integer
-| Float
-| variable
-| procedure_statement
-| '!' factor
-| sign factor
+factor: Integer {
+  $$ = newType("int", -1);
+}
+| Float {
+  $$ = newType("float", -1);
+}
+| variable {
+  if ($1 == NULL) {
+    $$ = NULL;
+  } else {
+    $$ = $1->type;
+  }
+}
+| procedure_statement {
+  if ($1 == NULL) {
+    $$ = NULL;
+  } else if ($1->return_type == NULL) {
+    yaccError(yylineno, "Procedure \"%s\" not have return value (incompatible usage)", $1->name);
+    $$ = NULL;
+  } else {
+    $$ = newType($1->return_type, -1);
+  }
+}
+| '!' factor {
+  $$ = newType("int", -1);
+}
+| sign factor {
+  if ($2 == NULL) {
+    $$ = NULL;
+  } else {
+    $$ = incompatibleArrayUsageError($2, yylineno);
+  }
+}
 ;
 
 sign: '+' {
