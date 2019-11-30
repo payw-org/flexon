@@ -146,7 +146,15 @@ statement_list: statement
 | statement ';' statement_list
 ;
 
-statement: variable '=' expression
+statement: variable '=' expression {
+  if ($1 != NULL && $3 != NULL) {
+    if ($1->type->size == -1 && $3->size >= 0) {
+      yaccError(yylineno, "Array is not assignable to non-array variable \"%s\"", $1->name);
+    } else if ($1->type->size >= 0) {
+      yaccError(yylineno, "Array type \"%s\"(%s[%d]) is not assignable", $1->name, $1->type->type, $1->type->size);
+    }
+  }
+}
 | print_statement
 | procedure_statement
 | compound_statement
