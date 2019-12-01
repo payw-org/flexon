@@ -16,6 +16,7 @@ float[2] weight, memory;
   begin
     nop
   end
+
 begin
-  good()
+  good(3)
 end
