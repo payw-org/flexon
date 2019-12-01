@@ -35,13 +35,13 @@ We found some ambiguities in given grammer. So before getting started, we resolv
 
 ## Build Instruction
 
-1. Make
+Build using Make
 
 ```bash
-$ Make
+$ make
 ```
 
-2. Run executable with test data set
+Run executable with test data set
 
 ```bash
 $ ./flexon test/demo.pas
