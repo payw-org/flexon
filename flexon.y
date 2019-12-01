@@ -158,10 +158,10 @@ statement_list: statement
 
 statement: variable '=' expression {
   if ($1 != NULL && $3 != NULL) {
-    if ($1->type->size == -1 && $3->size >= 0) {
-      yaccError(yylineno, "Array is not assignable to non-array variable \"%s\"", $1->name);
-    } else if ($1->type->size >= 0) {
+    if ($1->type->size >= 0) {
       yaccError(yylineno, "Array type \"%s\"(%s[%d]) is not assignable", $1->name, $1->type->type, $1->type->size);
+    } else if ($3->size >= 0) {
+      yaccError(yylineno, "Array(%s[%d]) cannot assign to variable", $3->type, $3->size);
     }
   }
 }
@@ -183,7 +183,7 @@ statement: variable '=' expression {
     if (curr_func->return_type == NULL) {
       yaccError(yylineno, "Procedure \"%s\" cannot have return value", curr_func->name);
     } else {
-      if ($2->size >= 0) {
+      if ($2 != NULL && $2->size >= 0) {
         yaccError(yylineno, "Function \"%s\" cannot have array type(%s[%d]) return value", curr_func->name, $2->type, $2->size);
       }
     }
