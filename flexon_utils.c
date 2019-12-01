@@ -402,7 +402,7 @@ DeclaredFunction* checkFunc(Collector *collector, char *id, UniversalTypeList *p
       } else {
         for (int j = 0; j < decl_func->arguments->size; j++) {
           UniversalType *argumentType = decl_func->arguments->decl_ids[j]->type;
-          UniversalType *parameterType = param_type_list->types[j];
+          UniversalType *parameterType = param_type_list->types[decl_func->arguments->size - 1 - j];
 
           if (argumentType->size >= 0 && parameterType->size >= 0) {
             if (argumentType->size != parameterType->size) {
