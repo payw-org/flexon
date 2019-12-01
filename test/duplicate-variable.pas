@@ -19,3 +19,4 @@ float[3] weight, score;
 begin
   nop
 end
+

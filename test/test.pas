@@ -2,12 +2,12 @@ mainprog test;
 int count, credit, length;
 float[2] weight, memory;
 
-  function sum(foo, bar: int[5]): int;  // function for sum up two values
+  function sum(foo, bar: int[5]): int;
   float count, baz, boring;
 
   begin
-    credit[3] = 3
-    // return count + credit * weight[1]
+    credit[3] = 3;
+    return 3
   end
 
   procedure good;
