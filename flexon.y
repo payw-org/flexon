@@ -183,7 +183,7 @@ statement: variable '=' expression {
     if (curr_func->return_type == NULL) {
       yaccError(yylineno, "Procedure \"%s\" cannot have return value", curr_func->name);
     } else {
-      if ($2->size >= 0) {
+      if ($2 != NULL && $2->size >= 0) {
         yaccError(yylineno, "Function \"%s\" cannot have array type(%s[%d]) return value", curr_func->name, $2->type, $2->size);
       }
     }
